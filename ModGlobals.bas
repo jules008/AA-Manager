@@ -16,11 +16,13 @@ Option Explicit
 Public Const PROJECT_FILE_NAME As String = "RDS Agreement Manager"
 Public Const APP_NAME As String = "RDS Agreement Manager"
 Public Const EXPORT_FILE_PATH As String = "\\lincsfire.lincolnshire.gov.uk\folderredir$\Documents\julian.turner\Documents\RDS Project\AA Manager\Library\Dev\"
+Public Const IMPORT_FILE_PATH As String = "\\lincsfire.lincolnshire.gov.uk\folderredir$\Documents\julian.turner\Documents\RDS Project\AA Manager\Library\Dev\"
+Public Const DB_FILE_NAME As String = "Rappel Data Pre-Live v0,04.accdb"
 Public Const INI_FILE_PATH As String = "\System Files\"
 Public Const INI_FILE_NAME As String = "System.ini"
 Public Const STOP_FLAG As Boolean = False
 Public Const MAINT_MSG As String = ""
-Public Const SEND_ERR_MSG As Boolean = True
+Public Const SEND_ERR_MSG As Boolean = False
 Public Const TEST_PREFIX As String = "TEST - "
 Public Const FILE_ERROR_LOG As String = "Error.log"
 Public Const VERSION = "V0.0.0"

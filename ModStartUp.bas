@@ -21,7 +21,9 @@ Public Function Initialise() As Boolean
     On Error GoTo ErrorHandler
 
     Terminate
-    
+
+    SYS_PATH = ThisWorkbook.Path & INI_FILE_PATH
+
     Application.StatusBar = "Reading INI File....."
     
     If Not ReadINIFile Then Err.Raise HANDLED_ERROR
@@ -86,13 +88,13 @@ Public Function GetUserName() As Boolean
 '       If ShtSettings.Range("C15") = True Then
 '            UserName = ShtSettings.Range("Test_User")
 '        Else
-'            UserName = "Julian Turner"
+        UserName = "Julian Turner"
 '        End If
     Else
         UserName = Application.UserName
     End If
     
-    If UserName = "" Then Err.Raise HANDLED_ERROR
+    If UserName = "" Then Err.Raise HANDLED_ERROR, , "No Username"
 
     UserName = Replace(UserName, "'", "")
     
@@ -140,6 +142,8 @@ Private Function ReadINIFile() As Boolean
     On Error GoTo ErrorHandler
        
     INIFile = FreeFile()
+       
+    Debug.Print SYS_PATH & INI_FILE_NAME
     
     If Dir(SYS_PATH & INI_FILE_NAME) = "" Then Err.Raise NO_INI_FILE
     

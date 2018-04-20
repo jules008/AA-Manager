@@ -34,8 +34,6 @@ Exit Sub
 
 ErrorExit:
 
-'    ***CleanUpCode***
-
 Exit Sub
 
 ErrorHandler:
@@ -88,12 +86,9 @@ Private Sub Workbook_Open()
     On Error GoTo ErrorHandler
     
     If Not ModStartUp.Initialise Then Err.Raise HANDLED_ERROR
-    
 Exit Sub
 
 ErrorExit:
-
-'    ***CleanUpCode***
 
 Exit Sub
 

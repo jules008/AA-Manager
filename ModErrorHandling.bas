@@ -27,9 +27,9 @@ Public Function CentralErrorHandler( _
     Dim ErrNum As Long
     Dim ErrHeader As String
     Dim LogText As String
-'    Dim ErrMsgTxt As String
     
     ErrNum = Err.Number
+    ErrMsg = Err.Description
     
     If Len(ErrMsg) = 0 Then ErrMsg = Err.Description
                 
@@ -39,13 +39,11 @@ Public Function CentralErrorHandler( _
     
     If Right$(SYS_PATH, 1) <> "\" Then SYS_PATH = SYS_PATH & "\"
     
-    SYS_PATH = SYS_PATH & "System Files\"
-    
-    ErrHeader = "[" & ErrFile & "]" & ErrModule & "." & ErrProc
+    ErrHeader = "[" & Application.UserName & "]" & "[" & ErrFile & "]" & ErrModule & "." & ErrProc
 
-    LogText = "  " & ErrHeader & ", Error " & CStr(ErrNum) & ": " & Err.Description
+    LogText = "  " & ErrHeader & ", Error " & CStr(ErrNum) & ": " & ErrMsg
     
-    If DEBUG_MODE Then
+    If Not DEBUG_MODE Then
         
         iFile = FreeFile()
         Open SYS_PATH & FILE_ERROR_LOG For Append As #iFile
@@ -55,24 +53,19 @@ Public Function CentralErrorHandler( _
     End If
                 
     Debug.Print Format$(Now(), "mm/dd/yy hh:mm:ss"); LogText
-    If EntryPoint Then Debug.Print
     
-    If EntryPoint Or DEBUG_MODE Then
+    If EntryPoint Then
+        Debug.Print
         ModLibrary.PerfSettingsOff
-
-        If Not ModLibrary.OutlookRunning Then
-            Shell "Outlook.exe"
-        End If
-
-        If MailSystem Is Nothing Then Set MailSystem = New ClsMailSystem
-    
+        
         If Not DEV_MODE And SEND_ERR_MSG Then SendErrMessage
-            
+            SendErrMessage
         ErrMsg = vbNullString
     End If
     
     CentralErrorHandler = DEBUG_MODE
     
+    ModLibrary.PerfSettingsOff
 End Function
 
 ' ===============================================================
@@ -143,16 +136,26 @@ Public Function CustomErrorHandler(ErrorCode As Long, Optional Message As String
     CustomErrorHandler = True
 End Function
 
+' ===============================================================
+' SendErrMessage
+' Sends an email log file
+' ---------------------------------------------------------------
 Private Sub SendErrMessage()
+    
+    On Error Resume Next
+    
+    If MailSystem Is Nothing Then Set MailSystem = New ClsMailSystem
+        
+    If Not ModLibrary.OutlookRunning Then
+        Shell "Outlook.exe"
+    End If
+
     With MailSystem
         .MailItem.To = "Julian Turner"
         .MailItem.Subject = "Debug Report - " & APP_NAME
         .MailItem.Importance = olImportanceHigh
         .MailItem.Attachments.Add SYS_PATH & FILE_ERROR_LOG
-        .MailItem.Body = "Please add any further information such " _
-                           & "what you were doing at the time of the error" _
-                           & ", and what candidate were you working on etc "
-                           
+                           .SendEmail
         If SEND_EMAILS Then .SendEmail Else .DisplayEmail
     End With
 
