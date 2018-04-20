@@ -31,7 +31,7 @@ Restart:
     If DB Is Nothing Then
         Err.Raise NO_DATABASE_FOUND, Description:="Unable to connect to database"
     Else
-        If ModErrorHandling.FaultCount1008 > 0 Then ModErrorHandling.FaultCount1008 = 0
+        If FaultCount1008 > 0 Then FaultCount1008 = 0
     
         Set RstResults = DB.OpenRecordset(SQL, dbOpenDynaset)
         Set SQLQuery = RstResults
@@ -123,7 +123,8 @@ ErrorExit:
 
 Exit Function
 
-ErrorHandler:   If CentralErrorHandler(StrMODULE, StrPROCEDURE) Then
+ErrorHandler:
+    If CentralErrorHandler(StrMODULE, StrPROCEDURE) Then
         Stop
         Resume
     Else
@@ -378,8 +379,8 @@ Public Sub UpdateSysMsg()
     Set RstMessage = SQLQuery("TblMessage")
     
     With RstMessage
-        If .RecordCount = 0 Then
-            .AddNew
+        If .recordcount = 0 Then
+            .addnew
         Else
             .Edit
         End If

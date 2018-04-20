@@ -37,7 +37,6 @@ Public Function Initialise() As Boolean
     Application.StatusBar = "Finding User....."
     'get username of current user
     If Not ModStartUp.GetUserName Then Err.Raise HANDLED_ERROR
-    CurrentUser.LogOn
     
     'Show any messages
     If Not MessageCheck Then Err.Raise HANDLED_ERROR
@@ -84,11 +83,11 @@ Public Function GetUserName() As Boolean
     If Not UpdateUsername Then Err.Raise HANDLED_ERROR
     
     If DEV_MODE Then
-       If ShtSettings.Range("C15") = True Then
-            UserName = ShtSettings.Range("Test_User")
-        Else
-            UserName = "Julian Turner"
-        End If
+'       If ShtSettings.Range("C15") = True Then
+'            UserName = ShtSettings.Range("Test_User")
+'        Else
+'            UserName = "Julian Turner"
+'        End If
     Else
         UserName = Application.UserName
     End If
@@ -97,10 +96,6 @@ Public Function GetUserName() As Boolean
 
     UserName = Replace(UserName, "'", "")
     
-    CurrentUser.DBGet Trim(UserName)
-    
-    If CurrentUser.CrewNo = "" Then Err.Raise UNKNOWN_USER
-
 GracefulExit:
     
     GetUserName = True
@@ -133,64 +128,41 @@ End Function
 ' Gets start up variables from ini file
 ' ---------------------------------------------------------------
 Private Function ReadINIFile() As Boolean
-    Dim AppFPath As String
     Dim DebugMode As String
-    Dim TestMode As String
-    Dim OutputMode As String
     Dim EnablePrint As String
     Dim DBPath As String
     Dim SendEmails As String
     Dim DevMode As String
-    Dim TmpFPath As String
     Dim INIFile As Integer
-    Dim INIFPath As String
-    Dim StopFlag As String
-    Dim MaintMsg As String
     
     Const StrPROCEDURE As String = "ReadINIFile()"
 
     On Error GoTo ErrorHandler
-    
-    AppFPath = ThisWorkbook.Path
-    
-    If Left(AppFPath, 5) = "https" Then
-        INIFPath = "C:\Users\Julian\OneDrive\RDS Project\Stores IT Project\DevArea\System Files\"
-    Else
-        INIFPath = AppFPath & "\System Files\"
-    End If
-    
+       
     INIFile = FreeFile()
     
-    If Dir(INIFPath & INI_FILE) = "" Then Err.Raise NO_INI_FILE
+    If Dir(SYS_PATH & INI_FILE_NAME) = "" Then Err.Raise NO_INI_FILE
     
-    Open INIFPath & INI_FILE For Input As #INIFile
+    Open SYS_PATH & INI_FILE_NAME For Input As #INIFile
     
     Line Input #INIFile, DebugMode
-    Line Input #INIFile, TestMode
-    Line Input #INIFile, OutputMode
+    Line Input #INIFile, SendEmails
     Line Input #INIFile, EnablePrint
     Line Input #INIFile, DBPath
-    Line Input #INIFile, SendEmails
     Line Input #INIFile, DevMode
-    Line Input #INIFile, TmpFPath
-    Line Input #INIFile, StopFlag
-    Line Input #INIFile, MaintMsg
     
     Close #INIFile
     
     DEBUG_MODE = CBool(DebugMode)
-    TEST_MODE = CBool(TestMode)
-    OUTPUT_MODE = OutputMode
-    ENABLE_PRINT = CBool(EnablePrint)
-    ShtSettings.Range("DBPath") = DBPath
     SEND_EMAILS = CBool(SendEmails)
+    ENABLE_PRINT = CBool(EnablePrint)
+    DB_PATH = DBPath
     DEV_MODE = CBool(DevMode)
-    SYS_PATH = TmpFPath
     
-    If StopFlag = True Then Stop
+    If STOP_FLAG = True Then Stop
     
-    If MaintMsg <> "Online" Then
-        MsgBox MaintMsg, vbExclamation, APP_NAME
+    If MAINT_MSG <> "" Then
+        MsgBox MAINT_MSG, vbExclamation, APP_NAME
         Application.DisplayAlerts = False
         ActiveWorkbook.Close
         Application.DisplayAlerts = True
@@ -207,7 +179,6 @@ Exit Function
 
 ErrorExit:
 
-'    ***CleanUpCode***
     ReadINIFile = False
     Application.DisplayAlerts = True
 
@@ -240,20 +211,18 @@ Public Function MessageCheck() As Boolean
 
     On Error GoTo ErrorHandler
     
-    If CurrentUser Is Nothing Then Err.Raise SYSTEM_RESTART
-
-    If CurrentUser.AccessLvl >= BasicLvl_1 Then
-        If Not CurrentUser.MessageRead Then
-            
-            Set RstMessage = SQLQuery("TblMessage")
-            
-            If RstMessage.RecordCount > 0 Then StrMessage = RstMessage.Fields(0)
-            MsgBox StrMessage, vbOKOnly + vbInformation, APP_NAME
-            CurrentUser.MessageRead = True
-            CurrentUser.DBSave
-            
-        End If
-    End If
+'    If CurrentUser.AccessLvl >= BasicLvl_1 Then
+'        If Not CurrentUser.MessageRead Then
+'
+'            Set RstMessage = SQLQuery("TblMessage")
+'
+'            If RstMessage.RecordCount > 0 Then StrMessage = RstMessage.Fields(0)
+'            MsgBox StrMessage, vbOKOnly + vbInformation, APP_NAME
+'            CurrentUser.MessageRead = True
+'            CurrentUser.DBSave
+'
+'        End If
+'    End If
     
     Set RstMessage = Nothing
     
@@ -268,7 +237,9 @@ ErrorExit:
 
 Exit Function
 
-ErrorHandler:   If CentralErrorHandler(StrMODULE, StrPROCEDURE) Then
+ErrorHandler:
+    
+    If CentralErrorHandler(StrMODULE, StrPROCEDURE) Then
         Stop
         Resume
     Else
