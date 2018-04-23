@@ -379,7 +379,7 @@ Public Sub UpdateSysMsg()
     Set RstMessage = SQLQuery("TblMessage")
     
     With RstMessage
-        If .recordcount = 0 Then
+        If .RecordCount = 0 Then
             .addnew
         Else
             .Edit

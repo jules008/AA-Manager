@@ -263,11 +263,11 @@ End Function
 ' Prints any document
 ' ---------------------------------------------------------------
 Public Function PrintDoc(FileName As String)
-    Dim x As Long
+    Dim X As Long
     
     On Error Resume Next
     
-    x = ShellExecute(0, "Print", FileName, 0&, 0&, 3)
+    X = ShellExecute(0, "Print", FileName, 0&, 0&, 3)
 
 End Function
 
@@ -276,11 +276,11 @@ End Function
 ' Opens any document
 ' ---------------------------------------------------------------
 Public Function OpenDoc(FileName As String)
-    Dim x As Long
+    Dim X As Long
     
 '    On Error Resume Next
     
-    x = ShellExecute(0, "Open", FileName, "", "", vbNormalNoFocus)
+    X = ShellExecute(0, "Open", FileName, "", "", vbNormalNoFocus)
 
 End Function
 
