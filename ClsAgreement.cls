@@ -22,7 +22,7 @@ Attribute VB_Exposed = False
 
 Option Explicit
 Private pCrewNo As String
-Private pTimeSlot(1 To 84, 1 To 48) As Integer
+Private pTimeSlot(1 To 48, 1 To 84) As Integer
 Private pCrewMember As TypeCrewMember
 Private pAADate As Date
 Private pContractType As Integer
@@ -43,11 +43,11 @@ End Property
 
 '---------------------------------------------------------------
 Public Property Get TimeSlot(Day As Integer, Slot As Integer) As Integer
-    TimeSlot = pTimeSlot(Day, Slot)
+    TimeSlot = pTimeSlot(Slot, Day)
 End Property
 
 Public Property Let TimeSlot(Day As Integer, Slot As Integer, ByVal vNewValue As Integer)
-    pTimeSlot(Day, Slot) = vNewValue
+    pTimeSlot(Slot, Day) = vNewValue
 End Property
 
 '---------------------------------------------------------------
@@ -130,14 +130,15 @@ End Property
 Public Sub DBGet()
     Dim RstAgreement As Recordset
     Dim RstSlots As Recordset
-
-    Set RstAgreement = ModDatabase.SQLQuery("SELECT * FROM TblAgreement WHERE CrewNo = " & pCrewNo)
-    Set RstSlots = ModDatabase.SQLQuery("SELECT * FROM TemplateDetail WHERE CrewNo = " & pCrewNo)
+    
+    Set RstAgreement = ModDatabase.SQLQuery("SELECT * FROM TblTemplate WHERE CrewNo = '" & pCrewMember.CrewNo & "'")
+    Set RstSlots = ModDatabase.SQLQuery("SELECT * FROM TblTemplateDetail WHERE CrewNo = '" & pCrewMember.CrewNo & "'")
     
     With RstAgreement
         If .RecordCount > 0 Then
             If Not IsNull(!CrewNo) Then pCrewMember.CrewNo = !CrewNo
             If Not IsNull(!CrewName) Then pCrewMember.Name = !CrewName
+            If Not IsNull(!Role) Then pCrewMember.Role = !Role
             If Not IsNull(!TemplateDate) Then pAADate = !TemplateDate
             If Not IsNull(!ContractType) Then pContractType = !ContractType
             If Not IsNull(!HrsPW) Then pHrsPW = !HrsPW
@@ -146,16 +147,16 @@ Public Sub DBGet()
         End If
         
         If .RecordCount = 1 Then
-            If Not IsNull(!Station1) Then pStation1.StationNo = !Station1
+            If Not IsNull(!StationNo) Then pStation1.StationNo = !StationNo
         End If
         
         If .RecordCount = 2 Then
             Do While Not .EOF
             
                 If !NoStation = 1 Then
-                    If Not IsNull(!Station1) Then pStation1.StationNo = !Station1
+                    If Not IsNull(!StationNo) Then pStation1.StationNo = !StationNo
                 Else
-                    If Not IsNull(!Station2) Then pStation2.StationNo = !Station2
+                    If Not IsNull(!StationNo) Then pStation2.StationNo = !StationNo
                 End If
             Loop
         End If
@@ -164,7 +165,7 @@ Public Sub DBGet()
     With RstSlots
         If .RecordCount > 0 Then
             Do While Not .EOF
-                pTimeSlot(!Day, !TimeSlot) = !oncall
+                pTimeSlot(!TimeSlot, !Day) = !oncall
                 .MoveNext
             Loop
         End If
@@ -241,13 +242,20 @@ End Sub
 
 
 ' ===============================================================
-Private Sub Class_Initialize()
-
+' Method DisplayAA()
+' Displays Agreement on screen
+'---------------------------------------------------------------
+Public Sub DisplayAA()
+    [CrewNo] = pCrewMember.CrewNo
+    [CrewName] = pCrewMember.Name
+    [Role] = pCrewMember.Role
+    [TemplateDate] = pAADate
+    [ContractType] = pContractType
+    [HRsWk] = pHrsPW
+    [NoWeeks] = pNoWeeks
+    [RevDate] = pRevDateDue
+    
+    'resize range to allow array to be copied to range
+    Range("slotsStart").Resize(UBound(pTimeSlot, 2), UBound(pTimeSlot, 1)).Value = Application.Transpose(pTimeSlot)
 End Sub
 
-'---------------------------------------------------------------
-Private Sub Class_Terminate()
-
-End Sub
-
-'---------------------------------------------------------------
