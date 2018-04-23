@@ -4,7 +4,7 @@ Attribute VB_Name = "ModGlobals"
 '===============================================================
 ' v1.0.0 - Initial Version
 '---------------------------------------------------------------
-' Date - 19 Apr 18
+' Date - 23 Apr 18
 '===============================================================
 Private Const StrMODULE As String = "ModGlobals"
 
@@ -89,5 +89,16 @@ Public Const COLOUR_11 As Long = 52479
 ' ===============================================================
 ' Type Declarations
 ' ---------------------------------------------------------------
+Type TypeStation
+    StationNo As Integer
+    StationCallSign As String
+    StationName As String
+End Type
 
-
+Type TypeCrewMember
+    CrewNo As String
+    Name As String
+    Station1 As TypeStation
+    Station2 As TypeStation
+    Role As String
+End Type

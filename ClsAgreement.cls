@@ -23,13 +23,14 @@ Attribute VB_Exposed = False
 Option Explicit
 Private pDeleted As Date
 Private pCrewNo As String
-Private pTimeSlots As String
-Private pCrewMember As ClsCrewMember
+Private pTimeSlot(1 To 84, 1 To 48) As Integer
+Private pCrewMember As TypeCrewMember
 Private pAADate As Date
 Private pContractType As String
 Private pHrsPW As Integer
 Private pNoWeeks As Integer
-Private pStation As String
+Private pStation1 As TypeStation
+Private pStation2 As TypeStation
 Private pRevDateDue As Date
 
 '---------------------------------------------------------------
@@ -43,29 +44,29 @@ End Property
 
 '---------------------------------------------------------------
 Public Property Get CrewNo() As String
-    CrewNo = pCrewNo
+    CrewNo = pCrewMember.CrewNo
 End Property
 
 Public Property Let CrewNo(ByVal vNewValue As String)
-    pCrewNo = vNewValue
+    pCrewMember.CrewNo = vNewValue
 End Property
 
 '---------------------------------------------------------------
-Public Property Get TimeSlots() As String
-    TimeSlots = pTimeSlots
+Public Property Get TimeSlot(Day As Integer, Slot As Integer) As Integer
+    TimeSlot = pTimeSlot(Day, Slot)
 End Property
 
-Public Property Let TimeSlots(ByVal vNewValue As String)
-    pTimeSlots = vNewValue
+Public Property Let TimeSlot(Day As Integer, Slot As Integer, ByVal vNewValue As Integer)
+    pTimeSlot(Day, Slot) = vNewValue
 End Property
 
 '---------------------------------------------------------------
-Public Property Get CrewMember() As ClsCrewMember
-    Set CrewMember = pCrewMember
+Public Property Get CrewMember() As TypeCrewMember
+    CrewMember = pCrewMember
 End Property
 
-Public Property Let CrewMember(ByVal vNewValue As ClsCrewMember)
-    Set pCrewMember = vNewValue
+Public Property Let CrewMember(ByRef vNewValue As TypeCrewMember)
+    pCrewMember = vNewValue
 End Property
 
 '---------------------------------------------------------------
@@ -105,12 +106,21 @@ Public Property Let NoWeeks(ByVal vNewValue As Integer)
 End Property
 
 '---------------------------------------------------------------
-Public Property Get Station() As String
-    Station = pStation
+Public Property Get Station1() As TypeStation
+    Station1 = pCrewMember.Station1
 End Property
 
-Public Property Let Station(ByVal vNewValue As String)
-    pStation = vNewValue
+Public Property Let Station1(ByRef vNewValue As TypeStation)
+    pCrewMember.Station1 = vNewValue
+End Property
+
+'---------------------------------------------------------------
+Public Property Get Station2() As TypeStation
+    Station2 = pCrewMember.Station2
+End Property
+
+Public Property Let Station2(ByRef vNewValue As TypeStation)
+    pCrewMember.Station2 = vNewValue
 End Property
 
 '---------------------------------------------------------------
@@ -135,7 +145,7 @@ Public Sub DBGet()
         If .RecordCount > 0 Then
             If Not IsNull(!Deleted) Then pDeleted = !Deleted
             If Not IsNull(!CrewNo) Then pCrewNo = !CrewNo
-            If Not IsNull(!TimeSlots) Then pTimeSlots = !TimeSlots
+            If Not IsNull(!TimeSlot) Then pTimeSlot = !TimeSlot
             If Not IsNull(!CrewMember) Then pCrewMember = !CrewMember
             If Not IsNull(!AADate) Then pAADate = !AADate
             If Not IsNull(!ContractType) Then pContractType = !ContractType
@@ -176,7 +186,7 @@ Public Sub DBSave()
             .Edit
         End If
         !CrewNo = pCrewNo
-        !TimeSlots = pTimeSlots
+        !TimeSlot = pTimeSlot
         !CrewMember = pCrewMember
         !AADate = pAADate
         !ContractType = pContractType
@@ -219,31 +229,12 @@ End Sub
 
 ' ===============================================================
 Private Sub Class_Initialize()
-    Set pCrewMember = New ClsCrewMember
 
-    pCrewMember.SetParent ObjPtr(Me)
-    pAADate.SetParent ObjPtr(Me)
-    pContractType.SetParent ObjPtr(Me)
-    pHrsPW.SetParent ObjPtr(Me)
-    pNoWeeks.SetParent ObjPtr(Me)
-    pStation.SetParent ObjPtr(Me)
-    pRevDateDue.SetParent ObjPtr(Me)
 End Sub
 
 '---------------------------------------------------------------
 Private Sub Class_Terminate()
-    Set pCrewMember = Nothing
 
-    pDeleted.SetParent 0
-    pCrewNo.SetParent 0
-    pTimeSlots.SetParent 0
-    pCrewMember.SetParent 0
-    pAADate.SetParent 0
-    pContractType.SetParent 0
-    pHrsPW.SetParent 0
-    pNoWeeks.SetParent 0
-    pStation.SetParent 0
-    pRevDateDue.SetParent 0
 End Sub
 
 '---------------------------------------------------------------
