@@ -2,11 +2,10 @@ ID,  dbLong
 CrewNo,  dbText
 Role,  dbText
 CrewName,  dbText
-NoStation,  dbLong
+NoStation,  dbDouble
 StationNo,  dbText
-StationName,  dbText
-TemplateDate,  dbText
-ContractType,  dbLong
-HrsPW,  dbLong
-NoWeeks,  dbLong
-RevDateDue,  dbLong
+TemplateDate,  dbDate
+ContractType,  dbDouble
+HrsPW,  dbDouble
+NoWeeks,  dbDouble
+RevDateDue,  dbDate

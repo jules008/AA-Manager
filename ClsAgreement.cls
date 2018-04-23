@@ -246,16 +246,49 @@ End Sub
 ' Displays Agreement on screen
 '---------------------------------------------------------------
 Public Sub DisplayAA()
-    [CrewNo] = pCrewMember.CrewNo
-    [CrewName] = pCrewMember.Name
-    [Role] = pCrewMember.Role
-    [TemplateDate] = pAADate
-    [ContractType] = pContractType
-    [HRsWk] = pHrsPW
-    [NoWeeks] = pNoWeeks
-    [RevDate] = pRevDateDue
+    Dim RngCrewNo As Range
+    Dim RngCrewName As Range
+    Dim RngRole As Range
+    Dim RngTemplateDate As Range
+    Dim RngContractType As Range
+    Dim RngHrsWk As Range
+    Dim RngNoWeeks As Range
+    Dim RngRevDate As Range
+    Dim RngSlotStart As Range
+    
+    Set RngCrewNo = ShtFrontPage.Range("B2")
+    Set RngCrewName = ShtFrontPage.Range("C2")
+    Set RngRole = ShtFrontPage.Range("D2")
+    Set RngTemplateDate = ShtFrontPage.Range("E2")
+    Set RngContractType = ShtFrontPage.Range("F2")
+    Set RngHrsWk = ShtFrontPage.Range("G2")
+    Set RngNoWeeks = ShtFrontPage.Range("H2")
+    Set RngRevDate = ShtFrontPage.Range("I2")
+    Set RngSlotStart = ShtFrontPage.Range("B4")
+    
+    RngCrewNo = pCrewMember.CrewNo
+    RngCrewName = pCrewMember.Name
+    RngRole = pCrewMember.Role
+    RngTemplateDate = pAADate
+    RngContractType = pContractType
+    RngHrsWk = pHrsPW
+    RngNoWeeks = pNoWeeks
+    RngRevDate = pRevDateDue
     
     'resize range to allow array to be copied to range
-    Range("slotsStart").Resize(UBound(pTimeSlot, 2), UBound(pTimeSlot, 1)).Value = Application.Transpose(pTimeSlot)
+    RngSlotStart.Resize(UBound(pTimeSlot, 2), UBound(pTimeSlot, 1)).Value = Application.Transpose(pTimeSlot)
+    
+    Set RngCrewNo = Nothing
+    Set RngCrewName = Nothing
+    Set RngRole = Nothing
+    Set RngTemplateDate = Nothing
+    Set RngContractType = Nothing
+    Set RngHrsWk = Nothing
+    Set RngNoWeeks = Nothing
+    Set RngRevDate = Nothing
+    Set RngSlotStart = Nothing
+
+
+
 End Sub
 
