@@ -17,6 +17,7 @@ Public Const PROJECT_FILE_NAME As String = "RDS Agreement Manager"
 Public Const APP_NAME As String = "RDS Agreement Manager"
 Public Const EXPORT_FILE_PATH As String = "\\lincsfire.lincolnshire.gov.uk\folderredir$\Documents\julian.turner\Documents\RDS Project\AA Manager\Library\Dev\"
 Public Const IMPORT_FILE_PATH As String = "\\lincsfire.lincolnshire.gov.uk\folderredir$\Documents\julian.turner\Documents\RDS Project\AA Manager\Library\Dev\"
+Public Const LIBRARY_FILE_PATH As String = "\\lincsfire.lincolnshire.gov.uk\folderredir$\Documents\julian.turner\Documents\RDS Project\AA Manager\Library\Dev\"
 Public Const DB_FILE_NAME As String = "Rappel Data Pre-Live v0,04.accdb"
 Public Const INI_FILE_PATH As String = "\System Files\"
 Public Const INI_FILE_NAME As String = "System.ini"
@@ -84,7 +85,10 @@ Public Const COLOUR_11 As Long = 52479
 ' ===============================================================
 ' Enum Declarations
 ' ---------------------------------------------------------------
-
+Enum EnumContractType
+    Under120hrs = 1
+    Over120hrs = 2
+End Enum
 
 ' ===============================================================
 ' Type Declarations

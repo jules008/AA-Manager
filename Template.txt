@@ -6,3 +6,7 @@ NoStation,  dbLong
 StationNo,  dbText
 StationName,  dbText
 TemplateDate,  dbText
+ContractType,  dbLong
+HrsPW,  dbLong
+NoWeeks,  dbLong
+RevDateDue,  dbLong

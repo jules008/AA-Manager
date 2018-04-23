@@ -21,26 +21,16 @@ Attribute VB_Exposed = False
 '===============================================================
 
 Option Explicit
-Private pDeleted As Date
 Private pCrewNo As String
 Private pTimeSlot(1 To 84, 1 To 48) As Integer
 Private pCrewMember As TypeCrewMember
 Private pAADate As Date
-Private pContractType As String
+Private pContractType As Integer
 Private pHrsPW As Integer
 Private pNoWeeks As Integer
 Private pStation1 As TypeStation
 Private pStation2 As TypeStation
 Private pRevDateDue As Date
-
-'---------------------------------------------------------------
-Public Property Get Deleted() As Date
-    Deleted = pDeleted
-End Property
-
-Public Property Let Deleted(ByVal vNewValue As Date)
-    pDeleted = vNewValue
-End Property
 
 '---------------------------------------------------------------
 Public Property Get CrewNo() As String
@@ -79,11 +69,11 @@ Public Property Let AADate(ByVal vNewValue As Date)
 End Property
 
 '---------------------------------------------------------------
-Public Property Get ContractType() As String
+Public Property Get ContractType() As Integer
     ContractType = pContractType
 End Property
 
-Public Property Let ContractType(ByVal vNewValue As String)
+Public Property Let ContractType(ByVal vNewValue As Integer)
     pContractType = vNewValue
 End Property
 
@@ -139,25 +129,48 @@ End Property
 '---------------------------------------------------------------
 Public Sub DBGet()
     Dim RstAgreement As Recordset
+    Dim RstSlots As Recordset
 
-    Set RstAgreement = ModDatabase.SQLQuery("SELECT * FROM TblAgreement WHERE CrewNo = " & pCrewNo & " AND Deleted IS NULL")
+    Set RstAgreement = ModDatabase.SQLQuery("SELECT * FROM TblAgreement WHERE CrewNo = " & pCrewNo)
+    Set RstSlots = ModDatabase.SQLQuery("SELECT * FROM TemplateDetail WHERE CrewNo = " & pCrewNo)
+    
     With RstAgreement
         If .RecordCount > 0 Then
-            If Not IsNull(!Deleted) Then pDeleted = !Deleted
-            If Not IsNull(!CrewNo) Then pCrewNo = !CrewNo
-            If Not IsNull(!TimeSlot) Then pTimeSlot = !TimeSlot
-            If Not IsNull(!CrewMember) Then pCrewMember = !CrewMember
-            If Not IsNull(!AADate) Then pAADate = !AADate
+            If Not IsNull(!CrewNo) Then pCrewMember.CrewNo = !CrewNo
+            If Not IsNull(!CrewName) Then pCrewMember.Name = !CrewName
+            If Not IsNull(!TemplateDate) Then pAADate = !TemplateDate
             If Not IsNull(!ContractType) Then pContractType = !ContractType
             If Not IsNull(!HrsPW) Then pHrsPW = !HrsPW
             If Not IsNull(!NoWeeks) Then pNoWeeks = !NoWeeks
-            If Not IsNull(!Station) Then pStation = !Station
             If Not IsNull(!RevDateDue) Then pRevDateDue = !RevDateDue
-
-            pCrewMember.DBGet
+        End If
+        
+        If .RecordCount = 1 Then
+            If Not IsNull(!Station1) Then pStation1.StationNo = !Station1
+        End If
+        
+        If .RecordCount = 2 Then
+            Do While Not .EOF
+            
+                If !NoStation = 1 Then
+                    If Not IsNull(!Station1) Then pStation1.StationNo = !Station1
+                Else
+                    If Not IsNull(!Station2) Then pStation2.StationNo = !Station2
+                End If
+            Loop
         End If
     End With
-Set RstAgreement = Nothing
+            
+    With RstSlots
+        If .RecordCount > 0 Then
+            Do While Not .EOF
+                pTimeSlot(!Day, !TimeSlot) = !oncall
+                .MoveNext
+            Loop
+        End If
+    End With
+    Set RstAgreement = Nothing
+    Set RstSlots = Nothing
 End Sub
 
 ' ===============================================================
@@ -185,16 +198,16 @@ Public Sub DBSave()
         Else
             .Edit
         End If
-        !CrewNo = pCrewNo
-        !TimeSlot = pTimeSlot
-        !CrewMember = pCrewMember
-        !AADate = pAADate
-        !ContractType = pContractType
-        !HrsPW = pHrsPW
-        !NoWeeks = pNoWeeks
-        !Station = pStation
-        !RevDateDue = pRevDateDue
-        .Update
+'        !CrewNo = pCrewNo
+'        !TimeSlot = pTimeSlot
+'        !CrewMember = pCrewMember
+'        !AADate = pAADate
+'        !ContractType = pContractType
+'        !HrsPW = pHrsPW
+'        !NoWeeks = pNoWeeks
+'        !Station = pStation
+'        !RevDateDue = pRevDateDue
+'        .Update
 
     End With
     Set RstAgreement = Nothing
