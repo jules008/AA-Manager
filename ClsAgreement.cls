@@ -11,7 +11,7 @@ Attribute VB_Exposed = False
 ' Class ClsAgreement
 ' v0,0 - Initial Version
 '---------------------------------------------------------------
-' Date - 23 Apr 18
+' Date - 24 Apr 18
 '===============================================================
 ' Methods
 '---------------------------------------------------------------
@@ -254,7 +254,13 @@ Public Sub DisplayAA()
     Dim RngHrsWk As Range
     Dim RngNoWeeks As Range
     Dim RngRevDate As Range
-    Dim RngSlotStart As Range
+    Dim RngWeek1 As Range
+    Dim RngWeek2 As Range
+    Dim i As Integer
+    Dim x As Integer
+    Dim w As Integer
+    
+    Dim WeekArry(1 To 48, 1 To 7)
     
     Set RngCrewNo = ShtFrontPage.Range("B2")
     Set RngCrewName = ShtFrontPage.Range("C2")
@@ -264,7 +270,9 @@ Public Sub DisplayAA()
     Set RngHrsWk = ShtFrontPage.Range("G2")
     Set RngNoWeeks = ShtFrontPage.Range("H2")
     Set RngRevDate = ShtFrontPage.Range("I2")
-    Set RngSlotStart = ShtFrontPage.Range("B4")
+    Set RngWeek1 = ShtFrontPage.Range("B4:AW10")
+    
+    ClearAA
     
     RngCrewNo = pCrewMember.CrewNo
     RngCrewName = pCrewMember.Name
@@ -274,9 +282,83 @@ Public Sub DisplayAA()
     RngHrsWk = pHrsPW
     RngNoWeeks = pNoWeeks
     RngRevDate = pRevDateDue
+        
+    For w = 1 To pNoWeeks
+        For i = 1 To 7
+            For x = 1 To 48
+                WeekArry(x, i) = pTimeSlot(x, i + (w * 7) - 7)
+            Next
+        Next
+        RngWeek1.Offset((w * 8) - 8, 0) = Application.Transpose(WeekArry)
+    Next
+        
+    Set RngCrewNo = Nothing
+    Set RngCrewName = Nothing
+    Set RngRole = Nothing
+    Set RngTemplateDate = Nothing
+    Set RngContractType = Nothing
+    Set RngHrsWk = Nothing
+    Set RngNoWeeks = Nothing
+    Set RngRevDate = Nothing
+    Set RngWeek1 = Nothing
+End Sub
+
+' ===============================================================
+' Method ClearAA()
+' Clears the displayed AA
+'---------------------------------------------------------------
+Public Sub ClearAA()
+    ShtFrontPage.Range("B2:AW100").ClearContents
+End Sub
+
+' ===============================================================
+' Method UpdateAA()
+' Updates AA from screen
+'---------------------------------------------------------------
+Public Sub UpdateAA()
+    Dim RngCrewNo As Range
+    Dim RngCrewName As Range
+    Dim RngRole As Range
+    Dim RngTemplateDate As Range
+    Dim RngContractType As Range
+    Dim RngHrsWk As Range
+    Dim RngNoWeeks As Range
+    Dim RngRevDate As Range
+    Dim RngWeek1 As Range
+    Dim RngWeek2 As Range
+    Dim i As Integer
+    Dim x As Integer
+    Dim w As Integer
+
+    Dim WeekArry(1 To 48, 1 To 7)
     
-    'resize range to allow array to be copied to range
-    RngSlotStart.Resize(UBound(pTimeSlot, 2), UBound(pTimeSlot, 1)).Value = Application.Transpose(pTimeSlot)
+    Set RngCrewNo = ShtFrontPage.Range("B2")
+    Set RngCrewName = ShtFrontPage.Range("C2")
+    Set RngRole = ShtFrontPage.Range("D2")
+    Set RngTemplateDate = ShtFrontPage.Range("E2")
+    Set RngContractType = ShtFrontPage.Range("F2")
+    Set RngHrsWk = ShtFrontPage.Range("G2")
+    Set RngNoWeeks = ShtFrontPage.Range("H2")
+    Set RngRevDate = ShtFrontPage.Range("I2")
+    Set RngWeek1 = ShtFrontPage.Range("B4:AW10")
+
+    pCrewMember.Name = RngCrewName
+    pCrewMember.Role = RngRole
+    pAADate = RngTemplateDate
+    pContractType = RngContractType
+    pHrsPW = RngHrsWk
+    pNoWeeks = RngNoWeeks
+    pRevDateDue = RngRevDate
+    
+    For w = 1 To pNoWeeks
+        For i = 1 To 7
+            For x = 1 To 48
+                pTimeSlot(x, i + (w * 7) - 7) = RngWeek1.Offset((w * 8) - 8, 0).Cells(i, x)
+            Next
+        Next
+    Next
+    
+    
     
     Set RngCrewNo = Nothing
     Set RngCrewName = Nothing
@@ -286,9 +368,6 @@ Public Sub DisplayAA()
     Set RngHrsWk = Nothing
     Set RngNoWeeks = Nothing
     Set RngRevDate = Nothing
-    Set RngSlotStart = Nothing
-
-
+    Set RngWeek1 = Nothing
 
 End Sub
-

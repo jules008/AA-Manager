@@ -10,3 +10,15 @@ Public Sub GetAA()
     AA.DisplayAA
     Set AA = Nothing
 End Sub
+
+Public Sub UpdateAA()
+    Dim AA As ClsAgreement
+    
+    Set AA = New ClsAgreement
+    
+    AA.UpdateAA
+    Stop
+    AA.DisplayAA
+    Set AA = Nothing
+End Sub
+
