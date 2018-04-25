@@ -1,0 +1,2 @@
+ContractNo,  dbLong
+ContractType,  dbText

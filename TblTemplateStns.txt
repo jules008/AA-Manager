@@ -1,0 +1,5 @@
+ID,  dbLong
+CrewNo,  dbText
+Station,  dbDouble
+StationNo,  dbLong
+HrsPW,  dbDouble

@@ -146,6 +146,8 @@ Public Sub DBGet()
             If Not IsNull(!RevDateDue) Then pRevDateDue = !RevDateDue
         End If
         
+        .MoveLast
+        .MoveFirst
         If .RecordCount = 1 Then
             If Not IsNull(!StationNo) Then pStation1 = ModDBLookups.StationLookUp(StationNo:=!StationNo)
         End If
@@ -158,6 +160,7 @@ Public Sub DBGet()
                 Else
                     If Not IsNull(!StationNo) Then pStation2 = ModDBLookups.StationLookUp(StationNo:=!StationNo)
                 End If
+                .MoveNext
             Loop
         End If
     End With
@@ -311,7 +314,7 @@ Public Sub DisplayAA()
     RngCrewName = pCrewMember.Name
     RngRole = pCrewMember.Role
     RngTemplateDate = pAADate
-    RngContractType = pContractType
+    RngContractType = ModDBLookups.ContractLookUp(pContractType)
     RngHrsWk = pHrsPW
     RngNoWeeks = pNoWeeks
     RngStation1 = pStation1.StationCallSign & " - " & pStation1.StationName
@@ -369,14 +372,15 @@ Public Sub UpdateAA()
 
     Dim WeekArry(1 To 48, 1 To 7)
     
-    Set RngCrewNo = ShtFrontPage.Range("B2")
-    Set RngCrewName = ShtFrontPage.Range("C2")
-    Set RngRole = ShtFrontPage.Range("D2")
-    Set RngTemplateDate = ShtFrontPage.Range("E2")
-    Set RngContractType = ShtFrontPage.Range("F2")
-    Set RngHrsWk = ShtFrontPage.Range("G2")
-    Set RngNoWeeks = ShtFrontPage.Range("H2")
-    Set RngRevDate = ShtFrontPage.Range("I2")
+    Set RngCrewName = ShtFrontPage.Range("AY5")
+    Set RngRole = ShtFrontPage.Range("AY6")
+    Set RngTemplateDate = ShtFrontPage.Range("AY7")
+    Set RngContractType = ShtFrontPage.Range("AY8")
+    Set RngHrsWk = ShtFrontPage.Range("AY9")
+    Set RngNoWeeks = ShtFrontPage.Range("AY10")
+    Set RngRevDate = ShtFrontPage.Range("AY11")
+    Set RngStation1 = ShtFrontPage.Range("AY12")
+    Set RngStation2 = ShtFrontPage.Range("AY13")
     Set RngWeek1 = ShtFrontPage.Range("B4:AW10")
 
     pCrewMember.Name = RngCrewName

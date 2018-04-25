@@ -15,7 +15,7 @@ Public Sub UpdateAA()
     Dim AA As ClsAgreement
     
     Set AA = New ClsAgreement
-    AA.CrewNo = "5398"
+    AA.CrewNo = "5243"
     AA.UpdateAA
     AA.DBSave
     Set AA = Nothing
