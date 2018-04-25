@@ -317,7 +317,7 @@ Function JoinRecordsets(ByVal Rst1 As Recordset, Rst2 As Recordset) As Recordset
     With Rst2
         .MoveFirst
         Do While Not .EOF
-            Rst1.addnew
+            Rst1.AddNew
             
             For i = 0 To .Fields.Count - 1
                 Rst1.Fields(i) = Rst2.Fields(i)

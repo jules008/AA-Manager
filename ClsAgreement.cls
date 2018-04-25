@@ -11,7 +11,7 @@ Attribute VB_Exposed = False
 ' Class ClsAgreement
 ' v0,0 - Initial Version
 '---------------------------------------------------------------
-' Date - 24 Apr 18
+' Date - 25 Apr 18
 '===============================================================
 ' Methods
 '---------------------------------------------------------------
@@ -147,16 +147,16 @@ Public Sub DBGet()
         End If
         
         If .RecordCount = 1 Then
-            If Not IsNull(!StationNo) Then pStation1.StationNo = !StationNo
+            If Not IsNull(!StationNo) Then pStation1 = ModDBLookups.StationLookUp(StationNo:=!StationNo)
         End If
         
         If .RecordCount = 2 Then
             Do While Not .EOF
             
                 If !NoStation = 1 Then
-                    If Not IsNull(!StationNo) Then pStation1.StationNo = !StationNo
+                    If Not IsNull(!StationNo) Then pStation1 = ModDBLookups.StationLookUp(StationNo:=!StationNo)
                 Else
-                    If Not IsNull(!StationNo) Then pStation2.StationNo = !StationNo
+                    If Not IsNull(!StationNo) Then pStation2 = ModDBLookups.StationLookUp(StationNo:=!StationNo)
                 End If
             Loop
         End If
@@ -165,7 +165,7 @@ Public Sub DBGet()
     With RstSlots
         If .RecordCount > 0 Then
             Do While Not .EOF
-                pTimeSlot(!TimeSlot, !Day) = !oncall
+                pTimeSlot(!TimeSlot, !Day) = !OnCall
                 .MoveNext
             Loop
         End If
@@ -180,39 +180,69 @@ End Sub
 '---------------------------------------------------------------
 Public Sub DBSave()
     Dim RstAgreement As Recordset
-    Dim RstMaxNo As Recordset
-    Dim LastNo As Integer
+    Dim RstSlots As Recordset
+    Dim i As Integer
+    Dim x As Integer
+    Dim w As Integer
 
-    Set RstAgreement = ModDatabase.SQLQuery("SELECT * FROM TblAgreement WHERE CrewNo = " & pCrewNo & " AND Deleted IS NULL")
-    Set RstMaxNo = ModDatabase.SQLQuery("SELECT MAX(CrewNo) FROM TblAgreement ")
-
-    If RstMaxNo.Fields(0).Value <> 0 Then
-        LastNo = RstMaxNo.Fields(0).Value
-    Else
-        LastNo = 0
-    End If
-
+    Set RstAgreement = ModDatabase.SQLQuery("SELECT * FROM TblTemplate WHERE CrewNo = '" & pCrewMember.CrewNo & "'")
+    Set RstSlots = ModDatabase.SQLQuery("TblTemplateDetail")
+    
     With RstAgreement
-        If .RecordCount = 0 Then
-            .addnew
-            pCrewNo = LastNo + 1
-        Else
+        If .RecordCount > 0 Then
             .Edit
+            !CrewNo = pCrewMember.CrewNo
+            !CrewName = pCrewMember.Name
+            !Role = pCrewMember.Role
+            !TemplateDate = pAADate
+            !ContractType = pContractType
+            !HrsPW = pHrsPW
+            !NoWeeks = pNoWeeks
+            !RevDateDue = pRevDateDue
+            .Update
         End If
-'        !CrewNo = pCrewNo
-'        !TimeSlot = pTimeSlot
-'        !CrewMember = pCrewMember
-'        !AADate = pAADate
-'        !ContractType = pContractType
-'        !HrsPW = pHrsPW
-'        !NoWeeks = pNoWeeks
-'        !Station = pStation
-'        !RevDateDue = pRevDateDue
-'        .Update
-
+        
+        If .RecordCount = 1 Then
+            .Edit
+            !StationNo = pStation1.StationNo
+            .Update
+        End If
+        
+        If .RecordCount > 1 Then
+            Do While Not .EOF
+                If !NoStation = 1 Then
+                    .Edit
+                    !StationNo = pStation1.StationNo
+                    .Update
+                Else
+                    .Edit
+                    !StationNo = pStation2.StationNo
+                    .Update
+                End If
+                .MoveNext
+            Loop
+        End If
+    End With
+    
+    DB.Execute ("DELETE FROM TblTemplateDetail WHERE CrewNo = '" & pCrewMember.CrewNo & "'")
+    
+    With RstSlots
+        For w = 1 To pNoWeeks
+            For i = 1 To 7
+                For x = 1 To 48
+                    .AddNew
+                    !CrewNo = pCrewMember.CrewNo
+                    !Day = i + (w * 7) - 7
+                    !Weekday = i
+                    !TimeSlot = x
+                    !OnCall = pTimeSlot(x, i + (w * 7) - 7)
+                    .Update
+                Next
+            Next
+        Next
     End With
     Set RstAgreement = Nothing
-    Set RstMaxNo = Nothing
+    Set RstSlots = Nothing
 End Sub
 
 ' ===============================================================
@@ -254,22 +284,25 @@ Public Sub DisplayAA()
     Dim RngHrsWk As Range
     Dim RngNoWeeks As Range
     Dim RngRevDate As Range
+    Dim RngStation1 As Range
+    Dim RngStation2 As Range
     Dim RngWeek1 As Range
-    Dim RngWeek2 As Range
     Dim i As Integer
     Dim x As Integer
     Dim w As Integer
     
     Dim WeekArry(1 To 48, 1 To 7)
     
-    Set RngCrewNo = ShtFrontPage.Range("B2")
-    Set RngCrewName = ShtFrontPage.Range("C2")
-    Set RngRole = ShtFrontPage.Range("D2")
-    Set RngTemplateDate = ShtFrontPage.Range("E2")
-    Set RngContractType = ShtFrontPage.Range("F2")
-    Set RngHrsWk = ShtFrontPage.Range("G2")
-    Set RngNoWeeks = ShtFrontPage.Range("H2")
-    Set RngRevDate = ShtFrontPage.Range("I2")
+    Set RngCrewNo = ShtFrontPage.Range("AY4")
+    Set RngCrewName = ShtFrontPage.Range("AY5")
+    Set RngRole = ShtFrontPage.Range("AY6")
+    Set RngTemplateDate = ShtFrontPage.Range("AY7")
+    Set RngContractType = ShtFrontPage.Range("AY8")
+    Set RngHrsWk = ShtFrontPage.Range("AY9")
+    Set RngNoWeeks = ShtFrontPage.Range("AY10")
+    Set RngRevDate = ShtFrontPage.Range("AY11")
+    Set RngStation1 = ShtFrontPage.Range("AY12")
+    Set RngStation2 = ShtFrontPage.Range("AY13")
     Set RngWeek1 = ShtFrontPage.Range("B4:AW10")
     
     ClearAA
@@ -281,6 +314,8 @@ Public Sub DisplayAA()
     RngContractType = pContractType
     RngHrsWk = pHrsPW
     RngNoWeeks = pNoWeeks
+    RngStation1 = pStation1.StationCallSign & " - " & pStation1.StationName
+    RngStation2 = pStation2.StationCallSign & " - " & pStation2.StationName
     RngRevDate = pRevDateDue
         
     For w = 1 To pNoWeeks
@@ -300,6 +335,8 @@ Public Sub DisplayAA()
     Set RngHrsWk = Nothing
     Set RngNoWeeks = Nothing
     Set RngRevDate = Nothing
+    Set RngStation1 = Nothing
+    Set RngStation2 = Nothing
     Set RngWeek1 = Nothing
 End Sub
 
