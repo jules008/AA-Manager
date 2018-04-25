@@ -1,4 +1,3 @@
-ID,  dbLong
 CrewNo,  dbText
 Day,  dbDouble
 WeekDay,  dbDouble

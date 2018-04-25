@@ -128,44 +128,39 @@ End Property
 ' Gets class from Database
 '---------------------------------------------------------------
 Public Sub DBGet()
-    Dim RstAgreement As Recordset
-    Dim RstSlots As Recordset
+    Dim RstTemplate As Recordset
+    Dim RstTemplateDetail As Recordset
+    Dim RstTemplateStns As Recordset
     
-    Set RstAgreement = ModDatabase.SQLQuery("SELECT * FROM TblTemplate WHERE CrewNo = '" & pCrewMember.CrewNo & "'")
-    Set RstSlots = ModDatabase.SQLQuery("SELECT * FROM TblTemplateDetail WHERE CrewNo = '" & pCrewMember.CrewNo & "'")
-    
-    With RstAgreement
+    Set RstTemplate = ModDatabase.SQLQuery("SELECT * FROM TblTemplate WHERE CrewNo = '" & pCrewMember.CrewNo & "'")
+    Set RstTemplateDetail = ModDatabase.SQLQuery("SELECT * FROM TblTemplateDetail WHERE CrewNo = '" & pCrewMember.CrewNo & "'")
+    Set RstTemplateStns = ModDatabase.SQLQuery("SELECT * FROM TblTemplateStns WHERE CrewNo = '" & pCrewMember.CrewNo & "'")
+   
+    With RstTemplate
         If .RecordCount > 0 Then
             If Not IsNull(!CrewNo) Then pCrewMember.CrewNo = !CrewNo
-            If Not IsNull(!CrewName) Then pCrewMember.Name = !CrewName
             If Not IsNull(!Role) Then pCrewMember.Role = !Role
+            If Not IsNull(!CrewName) Then pCrewMember.Name = !CrewName
             If Not IsNull(!TemplateDate) Then pAADate = !TemplateDate
             If Not IsNull(!ContractType) Then pContractType = !ContractType
             If Not IsNull(!HrsPW) Then pHrsPW = !HrsPW
             If Not IsNull(!NoWeeks) Then pNoWeeks = !NoWeeks
             If Not IsNull(!RevDateDue) Then pRevDateDue = !RevDateDue
         End If
+    End With
         
-        .MoveLast
-        .MoveFirst
-        If .RecordCount = 1 Then
-            If Not IsNull(!StationNo) Then pStation1 = ModDBLookups.StationLookUp(StationNo:=!StationNo)
-        End If
-        
-        If .RecordCount = 2 Then
-            Do While Not .EOF
-            
-                If !NoStation = 1 Then
-                    If Not IsNull(!StationNo) Then pStation1 = ModDBLookups.StationLookUp(StationNo:=!StationNo)
-                Else
-                    If Not IsNull(!StationNo) Then pStation2 = ModDBLookups.StationLookUp(StationNo:=!StationNo)
-                End If
-                .MoveNext
-            Loop
-        End If
+    With RstTemplateStns
+        Do While Not .EOF
+            If !Station = 1 Then
+                If Not IsNull(!StationNo) Then pStation1 = ModDBLookups.StationLookUp(StationNo:=!StationNo)
+            Else
+                If Not IsNull(!StationNo) Then pStation2 = ModDBLookups.StationLookUp(StationNo:=!StationNo)
+            End If
+            .MoveNext
+        Loop
     End With
             
-    With RstSlots
+    With RstTemplateDetail
         If .RecordCount > 0 Then
             Do While Not .EOF
                 pTimeSlot(!TimeSlot, !Day) = !OnCall
@@ -173,8 +168,9 @@ Public Sub DBGet()
             Loop
         End If
     End With
-    Set RstAgreement = Nothing
-    Set RstSlots = Nothing
+    Set RstTemplate = Nothing
+    Set RstTemplateDetail = Nothing
+    Set RstTemplateStns = Nothing
 End Sub
 
 ' ===============================================================
@@ -182,54 +178,55 @@ End Sub
 ' Saves class to Database
 '---------------------------------------------------------------
 Public Sub DBSave()
-    Dim RstAgreement As Recordset
-    Dim RstSlots As Recordset
+    Dim RstTemplate As Recordset
+    Dim RstTemplateDetail As Recordset
+    Dim RstTemplateStns As Recordset
     Dim i As Integer
     Dim x As Integer
     Dim w As Integer
 
-    Set RstAgreement = ModDatabase.SQLQuery("SELECT * FROM TblTemplate WHERE CrewNo = '" & pCrewMember.CrewNo & "'")
-    Set RstSlots = ModDatabase.SQLQuery("TblTemplateDetail")
-    
-    With RstAgreement
+    Set RstTemplate = ModDatabase.SQLQuery("SELECT * FROM TblTemplate WHERE CrewNo = '" & pCrewMember.CrewNo & "'")
+    Set RstTemplateDetail = ModDatabase.SQLQuery("TblTemplateDetail")
+    Set RstTemplateStns = ModDatabase.SQLQuery("TblTemplateStns")
+   
+    With RstTemplate
         If .RecordCount > 0 Then
             .Edit
             !CrewNo = pCrewMember.CrewNo
             !CrewName = pCrewMember.Name
             !Role = pCrewMember.Role
-            !TemplateDate = pAADate
+            If pAADate <> 0 Then !TemplateDate = pAADate
             !ContractType = pContractType
             !HrsPW = pHrsPW
             !NoWeeks = pNoWeeks
             !RevDateDue = pRevDateDue
             .Update
         End If
-        
-        If .RecordCount = 1 Then
-            .Edit
+    End With
+            
+    DB.Execute ("DELETE FROM TblTemplateStns WHERE CrewNo = '" & pCrewMember.CrewNo & "'")
+    
+    With RstTemplateStns
+        If pStation1.StationNo <> 0 Then
+            .AddNew
+            !CrewNo = pCrewMember.CrewNo
+            !Station = 1
             !StationNo = pStation1.StationNo
             .Update
         End If
         
-        If .RecordCount > 1 Then
-            Do While Not .EOF
-                If !NoStation = 1 Then
-                    .Edit
-                    !StationNo = pStation1.StationNo
-                    .Update
-                Else
-                    .Edit
-                    !StationNo = pStation2.StationNo
-                    .Update
-                End If
-                .MoveNext
-            Loop
+        If pStation2.StationNo <> 0 Then
+            .AddNew
+            !CrewNo = pCrewMember.CrewNo
+            !Station = 2
+            !StationNo = pStation2.StationNo
+            .Update
         End If
     End With
     
     DB.Execute ("DELETE FROM TblTemplateDetail WHERE CrewNo = '" & pCrewMember.CrewNo & "'")
     
-    With RstSlots
+    With RstTemplateDetail
         For w = 1 To pNoWeeks
             For i = 1 To 7
                 For x = 1 To 48
@@ -244,8 +241,9 @@ Public Sub DBSave()
             Next
         Next
     End With
-    Set RstAgreement = Nothing
-    Set RstSlots = Nothing
+    Set RstTemplate = Nothing
+    Set RstTemplateDetail = Nothing
+    Set RstTemplateStns = Nothing
 End Sub
 
 ' ===============================================================
@@ -253,11 +251,11 @@ End Sub
 ' Marks record as deleted or fully deletes
 '---------------------------------------------------------------
 Public Sub DBDelete(Optional FullDelete As Boolean)
-    Dim RstAgreement As Recordset
+    Dim RstTemplate As Recordset
     Dim i As Integer
 
-    Set RstAgreement = ModDatabase.SQLQuery("SELECT * FROM TblAgreement WHERE CrewNo = " & pCrewNo & " AND Deleted IS NULL")
-    With RstAgreement
+    Set RstTemplate = ModDatabase.SQLQuery("SELECT * FROM TblAgreement WHERE CrewNo = " & pCrewNo & " AND Deleted IS NULL")
+    With RstTemplate
         For i = .RecordCount To 1 Step -1
             If FullDelete Then
                 .Delete
@@ -270,7 +268,7 @@ Public Sub DBDelete(Optional FullDelete As Boolean)
         Next
     End With
 
-    Set RstAgreement = Nothing
+    Set RstTemplate = Nothing
 End Sub
 
 
@@ -364,8 +362,10 @@ Public Sub UpdateAA()
     Dim RngHrsWk As Range
     Dim RngNoWeeks As Range
     Dim RngRevDate As Range
+    Dim RngStation1 As Range
+    Dim RngStation2 As Range
     Dim RngWeek1 As Range
-    Dim RngWeek2 As Range
+    Dim StationStr() As String
     Dim i As Integer
     Dim x As Integer
     Dim w As Integer
@@ -386,10 +386,20 @@ Public Sub UpdateAA()
     pCrewMember.Name = RngCrewName
     pCrewMember.Role = RngRole
     pAADate = RngTemplateDate
-    pContractType = RngContractType
+    If RngContractType = "Under 120hrs" Then pContractType = 1 Else pContractType = 2
     pHrsPW = RngHrsWk
     pNoWeeks = RngNoWeeks
     pRevDateDue = RngRevDate
+    
+    If RngStation1 <> "" Then
+        StationStr = Split(RngStation1, " - ")
+        pStation1 = ModDBLookups.StationLookUp(Callsign:=StationStr(0))
+    End If
+    
+    If RngStation2 <> "" Then
+        StationStr = Split(RngStation2, " - ")
+        pStation2 = ModDBLookups.StationLookUp(Callsign:=StationStr(0))
+    End If
     
     For w = 1 To pNoWeeks
         For i = 1 To 7
@@ -399,8 +409,6 @@ Public Sub UpdateAA()
         Next
     Next
     
-    
-    
     Set RngCrewNo = Nothing
     Set RngCrewName = Nothing
     Set RngRole = Nothing
@@ -409,6 +417,8 @@ Public Sub UpdateAA()
     Set RngHrsWk = Nothing
     Set RngNoWeeks = Nothing
     Set RngRevDate = Nothing
+    Set RngStation1 = Nothing
+    Set RngStation2 = Nothing
     Set RngWeek1 = Nothing
 
 End Sub

@@ -5,7 +5,7 @@ Public Sub GetAA()
     
     Set AA = New ClsAgreement
     
-    AA.CrewNo = "5243"
+    AA.CrewNo = "1013"
     AA.DBGet
     AA.DisplayAA
     Set AA = Nothing
@@ -15,7 +15,8 @@ Public Sub UpdateAA()
     Dim AA As ClsAgreement
     
     Set AA = New ClsAgreement
-    AA.CrewNo = "5243"
+    AA.CrewNo = "1013"
+    AA.DBGet
     AA.UpdateAA
     AA.DBSave
     Set AA = Nothing
