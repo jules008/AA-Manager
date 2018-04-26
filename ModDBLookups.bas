@@ -3,7 +3,7 @@ Attribute VB_Name = "ModDBLookups"
 ' Module ModDBLookups
 ' v0,0 - Initial Version
 '---------------------------------------------------------------
-' Date - 25 Apr 18
+' Date - 26 Apr 18
 '===============================================================
 
 Option Explicit
@@ -109,3 +109,36 @@ ErrorHandler:
     End If
 End Function
 
+' ===============================================================
+' ReturnStnList
+' Returns a list of stations in a recordset
+' ---------------------------------------------------------------
+Public Function ReturnStnList() As Recordset
+    Dim RstStations As Recordset
+    
+    Const StrPROCEDURE As String = "ReturnStnList()"
+
+    On Error GoTo ErrorHandler
+
+    Set RstStations = SQLQuery("SELECT StationNo, Callsign, Name FROM TblStnLookUp")
+    
+    Set ReturnStnList = RstStations
+
+    Set RstStations = Nothing
+Exit Function
+
+ErrorExit:
+
+    Set RstStations = Nothing
+    Set ReturnStnList = Nothing
+
+Exit Function
+
+ErrorHandler:
+    If CentralErrorHandler(StrMODULE, StrPROCEDURE) Then
+        Stop
+        Resume
+    Else
+        Resume ErrorExit
+    End If
+End Function

@@ -11,7 +11,7 @@ Attribute VB_Exposed = False
 ' Class ClsAgreement
 ' v0,0 - Initial Version
 '---------------------------------------------------------------
-' Date - 25 Apr 18
+' Date - 26 Apr 18
 '===============================================================
 ' Methods
 '---------------------------------------------------------------
@@ -285,8 +285,6 @@ Public Sub DisplayAA()
     Dim RngHrsWk As Range
     Dim RngNoWeeks As Range
     Dim RngRevDate As Range
-    Dim RngStation1 As Range
-    Dim RngStation2 As Range
     Dim RngWeek1 As Range
     Dim i As Integer
     Dim x As Integer
@@ -302,8 +300,6 @@ Public Sub DisplayAA()
     Set RngHrsWk = ShtFrontPage.Range("AY9")
     Set RngNoWeeks = ShtFrontPage.Range("AY10")
     Set RngRevDate = ShtFrontPage.Range("AY11")
-    Set RngStation1 = ShtFrontPage.Range("AY12")
-    Set RngStation2 = ShtFrontPage.Range("AY13")
     Set RngWeek1 = ShtFrontPage.Range("B4:AW10")
     
     ClearAA
@@ -315,8 +311,8 @@ Public Sub DisplayAA()
     RngContractType = ModDBLookups.ContractLookUp(pContractType)
     RngHrsWk = pHrsPW
     RngNoWeeks = pNoWeeks
-    RngStation1 = pStation1.StationCallSign & " - " & pStation1.StationName
-    RngStation2 = pStation2.StationCallSign & " - " & pStation2.StationName
+    ShtFrontPage.CmoStation1.ListIndex = pStation1.StationNo - 1
+    ShtFrontPage.CmoStation2.ListIndex = pStation2.StationNo - 1
     RngRevDate = pRevDateDue
         
     For w = 1 To pNoWeeks
@@ -336,8 +332,6 @@ Public Sub DisplayAA()
     Set RngHrsWk = Nothing
     Set RngNoWeeks = Nothing
     Set RngRevDate = Nothing
-    Set RngStation1 = Nothing
-    Set RngStation2 = Nothing
     Set RngWeek1 = Nothing
 End Sub
 
@@ -362,8 +356,6 @@ Public Sub UpdateAA()
     Dim RngHrsWk As Range
     Dim RngNoWeeks As Range
     Dim RngRevDate As Range
-    Dim RngStation1 As Range
-    Dim RngStation2 As Range
     Dim RngWeek1 As Range
     Dim StationStr() As String
     Dim i As Integer
@@ -379,8 +371,6 @@ Public Sub UpdateAA()
     Set RngHrsWk = ShtFrontPage.Range("AY9")
     Set RngNoWeeks = ShtFrontPage.Range("AY10")
     Set RngRevDate = ShtFrontPage.Range("AY11")
-    Set RngStation1 = ShtFrontPage.Range("AY12")
-    Set RngStation2 = ShtFrontPage.Range("AY13")
     Set RngWeek1 = ShtFrontPage.Range("B4:AW10")
 
     pCrewMember.Name = RngCrewName
@@ -391,14 +381,18 @@ Public Sub UpdateAA()
     pNoWeeks = RngNoWeeks
     pRevDateDue = RngRevDate
     
-    If RngStation1 <> "" Then
-        StationStr = Split(RngStation1, " - ")
-        pStation1 = ModDBLookups.StationLookUp(Callsign:=StationStr(0))
+    If ShtFrontPage.CmoStation1.ListIndex <> -1 Then
+        With ShtFrontPage.CmoStation1
+            StationStr = Split(.List(.ListIndex, 1), " - ")
+            pStation1 = ModDBLookups.StationLookUp(Callsign:=StationStr(0))
+        End With
     End If
     
-    If RngStation2 <> "" Then
-        StationStr = Split(RngStation2, " - ")
-        pStation2 = ModDBLookups.StationLookUp(Callsign:=StationStr(0))
+    If ShtFrontPage.CmoStation2.ListIndex <> -1 Then
+        With ShtFrontPage.CmoStation2
+            StationStr = Split(.List(.ListIndex, 1), " - ")
+            pStation2 = ModDBLookups.StationLookUp(Callsign:=StationStr(0))
+        End With
     End If
     
     For w = 1 To pNoWeeks
@@ -417,8 +411,6 @@ Public Sub UpdateAA()
     Set RngHrsWk = Nothing
     Set RngNoWeeks = Nothing
     Set RngRevDate = Nothing
-    Set RngStation1 = Nothing
-    Set RngStation2 = Nothing
     Set RngWeek1 = Nothing
 
 End Sub
