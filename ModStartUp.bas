@@ -43,7 +43,7 @@ Public Function Initialise() As Boolean
     'Show any messages
     If Not MessageCheck Then Err.Raise HANDLED_ERROR
     
-
+    If Not ShtFrontPage.Initialise Then Err.Raise HANDLED_ERROR
 
     Initialise = True
 

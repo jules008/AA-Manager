@@ -20,38 +20,10 @@ Option Explicit
 Private Const StrMODULE As String = "ShtFrontPage"
 
 ' ===============================================================
-' Worksheet_Activate
-' Initialisation
-' ---------------------------------------------------------------
-Private Sub Worksheet_Activate()
-    Const StrPROCEDURE As String = "Worksheet_Activate()"
-
-    On Error GoTo ErrorHandler
-
-    If Not Initialise Then Err.Raise HANDLED_ERROR
-
-Exit Sub
-
-ErrorExit:
-
-    '***CleanUpCode***
-
-Exit Sub
-
-ErrorHandler:
-    If CentralErrorHandler(StrMODULE, StrPROCEDURE, , True) Then
-        Stop
-        Resume
-    Else
-        Resume ErrorExit
-    End If
-End Sub
-
-' ===============================================================
 ' Initialise
 ' Initialises sheet
 ' ---------------------------------------------------------------
-Private Function Initialise() As Boolean
+Public Function Initialise() As Boolean
     Dim RstStation As Recordset
     Dim i As Integer
     

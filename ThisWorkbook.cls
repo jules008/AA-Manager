@@ -84,7 +84,6 @@ Private Sub Workbook_Open()
     Const StrPROCEDURE As String = "Workbook_Open()"
 
     On Error GoTo ErrorHandler
-    
     If Not ModStartUp.Initialise Then Err.Raise HANDLED_ERROR
 Exit Sub
 
