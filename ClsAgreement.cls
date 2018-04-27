@@ -379,17 +379,20 @@ Public Sub CreateNew()
     
     Do While Continue = False
         CrewNo = Application.InputBox("Please enter the Brigade No for the new Template", APP_NAME)
-        CrewMember = ModDBLookups.PersonLookUp(CrewNo)
+        pCrewMember = ModDBLookups.PersonLookUp(CrewNo)
         
         'check to see whether crewmember already has a template in the DB.  If so, offer the opportunity to open.
         'if they decline to open the template, restart the process so that a new brigade number can be added
-        With SelectedPerson
-            If .CrewNo <> 0 Then
+        With pCrewMember
+            If .CrewNo <> "" Then
                 Response = MsgBox(.CrewNo & " - " & .Name & " already has a template saved.  Do you want to open this?  if you select No, " _
-                                            & "you can enter another Brigade No", vbYesNo + vbExclamation, APP_NAME)
+                                            & "you can enter another Brigade No", vbYesNoCancel + vbExclamation, APP_NAME)
+                If Response = 2 Then Exit Sub
+                
                 If Response = 6 Then
                     DBGet
                     Display
+                    Continue = True
                 Else
                     Continue = False
                 End If
@@ -398,5 +401,7 @@ Public Sub CreateNew()
             End If
         End With
     Loop
-        
+    
+    pNoWeeks = Application.InputBox("How many weeks in the template cycle?", APP_NAME)
+    
 End Sub

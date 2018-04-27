@@ -178,7 +178,7 @@ Public Function PersonLookUp(CrewNo As String) As TypeCrewMember
         If .RecordCount > 0 Then
             PersonRecord.CrewNo = CrewNo
             If Not IsNull(!CrewName) Then PersonRecord.Name = !CrewName
-            If Not IsNull(!Role) <> Null Then PersonRecord.Role = !Role
+            If Not IsNull(!Role) Then PersonRecord.Role = !Role
                
             Do While Not .EOF
                 If !Station = 1 Then PersonRecord.Station1 = StationLookUp(StationNo:=!StationNo)

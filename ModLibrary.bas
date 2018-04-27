@@ -193,7 +193,6 @@ Sub AddCheckBoxes()
             End With
         Next
         myRange.Select
-        Set c = Nothing
         Set myRange = Nothing
     
 End Sub
@@ -213,7 +212,8 @@ Function IsProcessRunning(process As String) As Boolean
     Else
         IsProcessRunning = False
     End If
-
+    
+    Set objList = Nothing
 End Function
 
 ' ===============================================================
@@ -232,6 +232,7 @@ Function OutlookRunning() As Boolean
     Else
         OutlookRunning = True
     End If
+    Set oOutlook = Nothing
 End Function
 
 ' ===============================================================

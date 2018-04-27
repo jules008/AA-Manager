@@ -38,7 +38,6 @@ Restart:
     End If
     
     Set RstResults = Nothing
-    
 Exit Function
 
 ErrorExit:

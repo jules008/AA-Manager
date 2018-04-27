@@ -32,8 +32,9 @@ Public Function Initialise() As Boolean
     Const StrPROCEDURE As String = "Initialise()"
 
     On Error GoTo ErrorHandler
-
+    
     Set RstStation = ModDBLookups.ReturnStnList
+    Set Agreement = Nothing
     Set Agreement = New ClsAgreement
     
     With RstStation
@@ -69,7 +70,7 @@ Exit Function
 
 ErrorExit:
 
-    '***CleanUpCode***
+    Set RstStation = Nothing
     Initialise = False
 
 Exit Function
