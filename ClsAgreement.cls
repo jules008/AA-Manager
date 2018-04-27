@@ -273,10 +273,10 @@ End Sub
 
 
 ' ===============================================================
-' Method DisplayAA()
+' Method Display()
 ' Displays Agreement on screen
 '---------------------------------------------------------------
-Public Sub DisplayAA()
+Public Sub Display()
     Dim RngWeek1 As Range
     Dim i As Integer
     Dim x As Integer
@@ -286,7 +286,7 @@ Public Sub DisplayAA()
     
     Set RngWeek1 = ShtFrontPage.Range("B4:AW10")
     
-    ClearAA
+    Clear
     
     With ShtFrontPage
         .TxtCrewNo = pCrewMember.CrewNo
@@ -313,18 +313,18 @@ Public Sub DisplayAA()
 End Sub
 
 ' ===============================================================
-' Method ClearAA()
+' Method Clear()
 ' Clears the displayed AA
 '---------------------------------------------------------------
-Public Sub ClearAA()
-    ShtFrontPage.ClearAA
+Public Sub Clear()
+    ShtFrontPage.Clear
 End Sub
 
 ' ===============================================================
-' Method UpdateAA()
+' Method Update()
 ' Updates AA from screen
 '---------------------------------------------------------------
-Public Sub UpdateAA()
+Public Sub Update()
     Dim RngWeek1 As Range
     Dim StationStr() As String
     Dim i As Integer
@@ -366,4 +366,37 @@ Public Sub UpdateAA()
     
     Set RngWeek1 = Nothing
 
+End Sub
+
+' ===============================================================
+' Method CreateNew()
+' Creates new agreement
+'---------------------------------------------------------------
+Public Sub CreateNew()
+    Dim CrewNo As String
+    Dim Response As Integer
+    Dim Continue As Boolean
+    
+    Do While Continue = False
+        CrewNo = Application.InputBox("Please enter the Brigade No for the new Template", APP_NAME)
+        CrewMember = ModDBLookups.PersonLookUp(CrewNo)
+        
+        'check to see whether crewmember already has a template in the DB.  If so, offer the opportunity to open.
+        'if they decline to open the template, restart the process so that a new brigade number can be added
+        With SelectedPerson
+            If .CrewNo <> 0 Then
+                Response = MsgBox(.CrewNo & " - " & .Name & " already has a template saved.  Do you want to open this?  if you select No, " _
+                                            & "you can enter another Brigade No", vbYesNo + vbExclamation, APP_NAME)
+                If Response = 6 Then
+                    DBGet
+                    Display
+                Else
+                    Continue = False
+                End If
+            Else
+                Continue = True
+            End If
+        End With
+    Loop
+        
 End Sub

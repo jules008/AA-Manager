@@ -96,7 +96,6 @@ End Function
 Private Sub pMailItem_Send(Cancel As Boolean)
     Debug.Print "Item was sent by " & Environ("Username") & " at " & Now()
     Debug.Print MailItem.Body
-    ReturnMailItem
 End Sub
 
 '===============================================================

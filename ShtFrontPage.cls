@@ -101,7 +101,7 @@ Private Sub BtnLoadAA_Click()
     With Agreement
         .CrewMember = SelectedPerson
         .DBGet
-        .DisplayAA
+        .Display
     End With
     
 Exit Sub
@@ -122,6 +122,44 @@ ErrorHandler:
 End Sub
 
 ' ===============================================================
+' BtnNewAA_Click
+' Creates a new agreement
+' ---------------------------------------------------------------
+Private Sub BtnNewAA_Click()
+    Const StrPROCEDURE As String = "BtnNewAA_Click()"
+
+    On Error GoTo ErrorHandler
+
+Restart:
+
+    If Agreement Is Nothing Then Err.Raise SYSTEM_RESTART
+    
+    Agreement.CreateNew
+    
+GracefulExit:
+
+Exit Sub
+
+ErrorExit:
+
+    '***CleanUpCode***
+
+Exit Sub
+
+ErrorHandler:
+    If Err.Number >= 1000 And Err.Number <= 1500 Then
+        If CustomErrorHandler(Err.Number) Then Resume Restart
+    End If
+    
+    If CentralErrorHandler(StrMODULE, StrPROCEDURE, , True) Then
+        Stop
+        Resume
+    Else
+        Resume ErrorExit
+    End If
+End Sub
+
+' ===============================================================
 ' Worksheet_Deactivate
 ' Clears Agreement class on exit
 ' ---------------------------------------------------------------
@@ -130,14 +168,14 @@ Private Sub Worksheet_Deactivate()
 End Sub
 
 ' ===============================================================
-' ClearAA
+' Clear
 ' Clears the AA form
 ' ---------------------------------------------------------------
-Public Function ClearAA() As Boolean
+Public Function Clear() As Boolean
     Dim RngWk1 As Range
     Dim i As Integer
     
-    Const StrPROCEDURE As String = "ClearAA()"
+    Const StrPROCEDURE As String = "Clear()"
 
     On Error GoTo ErrorHandler
 
@@ -157,14 +195,14 @@ Public Function ClearAA() As Boolean
     CmoStation1 = ""
     CmoStation2 = ""
     
-    ClearAA = True
+    Clear = True
     
     Set RngWk1 = Nothing
 Exit Function
 
 ErrorExit:
 
-    ClearAA = False
+    Clear = False
     
     Set RngWk1 = Nothing
     

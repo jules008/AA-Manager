@@ -7,18 +7,18 @@ Public Sub GetAA()
     Initialise
     AA.CrewNo = "1015"
     AA.DBGet
-    AA.DisplayAA
+    AA.Display
     Set AA = Nothing
 End Sub
 
-Public Sub UpdateAA()
+Public Sub Update()
     Dim AA As ClsAgreement
     Initialise
     Set AA = New ClsAgreement
     AA.CrewNo = "1015"
     AA.DBGet
-'    AA.DisplayAA
-    AA.UpdateAA
+'    AA.Display
+    AA.Update
     AA.DBSave
     Set AA = Nothing
 End Sub

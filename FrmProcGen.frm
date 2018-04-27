@@ -124,7 +124,7 @@ Private Sub BtnPaste_Click()
     
     obj.SetText Txt
     obj.PutInClipboard
-    
+    Hide
 End Sub
 
 Private Sub OptNonEntry_Click()
