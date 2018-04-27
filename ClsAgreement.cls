@@ -317,7 +317,7 @@ End Sub
 ' Clears the displayed AA
 '---------------------------------------------------------------
 Public Sub ClearAA()
-    ShtFrontPage.Range("B2:AW100").ClearContents
+    ShtFrontPage.ClearAA
 End Sub
 
 ' ===============================================================

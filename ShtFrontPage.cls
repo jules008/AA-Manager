@@ -19,6 +19,8 @@ Option Explicit
 
 Private Const StrMODULE As String = "ShtFrontPage"
 
+Private Agreement As ClsAgreement
+
 ' ===============================================================
 ' Initialise
 ' Initialises sheet
@@ -32,6 +34,7 @@ Public Function Initialise() As Boolean
     On Error GoTo ErrorHandler
 
     Set RstStation = ModDBLookups.ReturnStnList
+    Set Agreement = New ClsAgreement
     
     With RstStation
         CmoStation1.Clear
@@ -69,6 +72,102 @@ ErrorExit:
     '***CleanUpCode***
     Initialise = False
 
+Exit Function
+
+ErrorHandler:
+    If CentralErrorHandler(StrMODULE, StrPROCEDURE) Then
+        Stop
+        Resume
+    Else
+        Resume ErrorExit
+    End If
+End Function
+
+' ===============================================================
+' BtnLoadAA_Click
+' Views AA for entered name
+' ---------------------------------------------------------------
+Private Sub BtnLoadAA_Click()
+    Dim SelectedPerson As TypeCrewMember
+    
+    Const StrPROCEDURE As String = "BtnLoadAA_Click()"
+
+    On Error GoTo ErrorHandler
+
+    SelectedPerson = FrmPersonPicker.ShowForm
+     
+    If SelectedPerson.CrewNo = "" Then Err.Raise HANDLED_ERROR, , "No person returned from Person Picker Form"
+    
+    With Agreement
+        .CrewMember = SelectedPerson
+        .DBGet
+        .DisplayAA
+    End With
+    
+Exit Sub
+
+ErrorExit:
+
+    '***CleanUpCode***
+
+Exit Sub
+
+ErrorHandler:
+    If CentralErrorHandler(StrMODULE, StrPROCEDURE, , True) Then
+        Stop
+        Resume
+    Else
+        Resume ErrorExit
+    End If
+End Sub
+
+' ===============================================================
+' Worksheet_Deactivate
+' Clears Agreement class on exit
+' ---------------------------------------------------------------
+Private Sub Worksheet_Deactivate()
+    Set Agreement = Nothing
+End Sub
+
+' ===============================================================
+' ClearAA
+' Clears the AA form
+' ---------------------------------------------------------------
+Public Function ClearAA() As Boolean
+    Dim RngWk1 As Range
+    Dim i As Integer
+    
+    Const StrPROCEDURE As String = "ClearAA()"
+
+    On Error GoTo ErrorHandler
+
+    Set RngWk1 = Range("B4:AW10")
+
+    For i = 0 To 11
+        RngWk1.Offset(i * 8, 0).ClearContents
+    Next
+
+    TxtCrewNo = ""
+    TxtName = ""
+    TxtNoWeeks = ""
+    TxtReviewDate = ""
+    TxtTemplateDate = ""
+    CmoContract = ""
+    CmoRole = ""
+    CmoStation1 = ""
+    CmoStation2 = ""
+    
+    ClearAA = True
+    
+    Set RngWk1 = Nothing
+Exit Function
+
+ErrorExit:
+
+    ClearAA = False
+    
+    Set RngWk1 = Nothing
+    
 Exit Function
 
 ErrorHandler:

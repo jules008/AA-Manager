@@ -142,3 +142,67 @@ ErrorHandler:
         Resume ErrorExit
     End If
 End Function
+
+' ===============================================================
+' PersonLookUp
+' Returns the person details from the DB
+' ---------------------------------------------------------------
+Public Function PersonLookUp(CrewNo As String) As TypeCrewMember
+    Dim PersonRecord As TypeCrewMember
+    Dim RstPerson As Recordset
+    Dim StrSelect As String
+    Dim StrFrom As String
+    Dim StrWhere As String
+    Dim StrOrderBy As String
+    
+    Const StrPROCEDURE As String = "PersonLookUp()"
+
+    On Error GoTo ErrorHandler
+    StrSelect = "SELECT " _
+                    & "TblTemplate.CrewNo, " _
+                    & "TblTemplate.Role, " _
+                    & "TblTemplate.CrewName, " _
+                    & "TblTemplateStns.Station, " _
+                    & "TblTemplateStns.StationNo "
+                    
+    StrFrom = "FROM " _
+                    & "TblTemplate " _
+                    & "INNER JOIN TblTemplateStns ON TblTemplateStns.CrewNo = TblTemplate.CrewNo " _
+
+    StrWhere = "WHERE " _
+                    & "TblTemplate.CrewNo = '" & CrewNo & "'"
+                    
+    Set RstPerson = ModDatabase.SQLQuery(StrSelect & StrFrom & StrWhere & StrOrderBy)
+    
+    With RstPerson
+        If .RecordCount > 0 Then
+            PersonRecord.CrewNo = CrewNo
+            If Not IsNull(!CrewName) Then PersonRecord.Name = !CrewName
+            If Not IsNull(!Role) <> Null Then PersonRecord.Role = !Role
+               
+            Do While Not .EOF
+                If !Station = 1 Then PersonRecord.Station1 = StationLookUp(StationNo:=!StationNo)
+                If !Station = 2 Then PersonRecord.Station2 = StationLookUp(StationNo:=!StationNo)
+                .MoveNext
+            Loop
+        End If
+    End With
+        PersonLookUp = PersonRecord
+    
+Exit Function
+
+ErrorExit:
+
+    Set RstPerson = Nothing
+    PersonLookUp = PersonRecord
+
+Exit Function
+
+ErrorHandler:
+    If CentralErrorHandler(StrMODULE, StrPROCEDURE) Then
+        Stop
+        Resume
+    Else
+        Resume ErrorExit
+    End If
+End Function

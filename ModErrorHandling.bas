@@ -4,7 +4,7 @@ Attribute VB_Name = "ModErrorHandling"
 '===============================================================
 ' v1.0.0 - Initial Version
 '---------------------------------------------------------------
-' Date - 20 Apr 18
+' Date - 27 Apr 18
 '===============================================================
 
 Option Explicit
@@ -128,6 +128,12 @@ Public Function CustomErrorHandler(ErrorCode As Long, Optional Message As String
             MsgBox "Incorrect Version Database - System cannot continue", vbCritical + vbOKOnly, APP_NAME
             Application.StatusBar = "System Failed - Wrong DB Version"
             End
+        
+        Case FORM_INPUT_EMPTY
+           MsgBox "Please complete all highlighted fields", vbExclamation, APP_NAME
+       
+        Case NO_USER_SELECTED
+            MsgBox "please select a Person", vbExclamation, APP_NAME
         
     End Select
     

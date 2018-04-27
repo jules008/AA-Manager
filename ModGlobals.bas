@@ -41,6 +41,8 @@ Public Const ACCESS_DENIED As Long = 1003
 Public Const NO_INI_FILE As Long = 1004
 Public Const DB_WRONG_VER As Long = 1005
 Public Const GENERIC_ERROR As Long = 1006
+Public Const FORM_INPUT_EMPTY As Long = 1007
+Public Const NO_USER_SELECTED As Long = 1008
 
 ' ===============================================================
 ' Error Variables
@@ -94,6 +96,12 @@ Enum EnumRole
     FireFighter = 0
     CrewManager = 1
     WatchManager = 2
+End Enum
+
+Enum EnumFormValidation
+    FunctionalError = 0
+    ValidationError = 1
+    FormOK = 2
 End Enum
 
 ' ===============================================================
