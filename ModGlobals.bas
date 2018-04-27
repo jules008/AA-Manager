@@ -4,7 +4,7 @@ Attribute VB_Name = "ModGlobals"
 '===============================================================
 ' v1.0.0 - Initial Version
 '---------------------------------------------------------------
-' Date - 25 Apr 18
+' Date - 27 Apr 18
 '===============================================================
 Private Const StrMODULE As String = "ModGlobals"
 
@@ -86,8 +86,14 @@ Public Const COLOUR_11 As Long = 52479
 ' Enum Declarations
 ' ---------------------------------------------------------------
 Enum EnumContractType
-    Under120hrs = 1
-    Over120hrs = 2
+    Under120hrs = 0
+    Over120hrs = 1
+End Enum
+
+Enum EnumRole
+    FireFighter = 0
+    CrewManager = 1
+    WatchManager = 2
 End Enum
 
 ' ===============================================================
@@ -104,5 +110,5 @@ Type TypeCrewMember
     Name As String
     Station1 As TypeStation
     Station2 As TypeStation
-    Role As String
+    Role As EnumRole
 End Type

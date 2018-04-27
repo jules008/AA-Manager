@@ -17,6 +17,7 @@ Attribute VB_Exposed = False
 
 
 
+
 Option Explicit
 Const PRTE_OR_PUB As Integer = 0
 Const VAR_NAME As Integer = 1

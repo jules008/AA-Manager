@@ -11,7 +11,7 @@ Attribute VB_Exposed = False
 ' Class ClsAgreement
 ' v0,0 - Initial Version
 '---------------------------------------------------------------
-' Date - 26 Apr 18
+' Date - 27 Apr 18
 '===============================================================
 ' Methods
 '---------------------------------------------------------------
@@ -25,7 +25,7 @@ Private pCrewNo As String
 Private pTimeSlot(1 To 48, 1 To 84) As Integer
 Private pCrewMember As TypeCrewMember
 Private pAADate As Date
-Private pContractType As Integer
+Private pContractType As EnumContractType
 Private pHrsPW As Integer
 Private pNoWeeks As Integer
 Private pStation1 As TypeStation
@@ -69,11 +69,11 @@ Public Property Let AADate(ByVal vNewValue As Date)
 End Property
 
 '---------------------------------------------------------------
-Public Property Get ContractType() As Integer
+Public Property Get ContractType() As EnumContractType
     ContractType = pContractType
 End Property
 
-Public Property Let ContractType(ByVal vNewValue As Integer)
+Public Property Let ContractType(ByVal vNewValue As EnumContractType)
     pContractType = vNewValue
 End Property
 
@@ -277,14 +277,6 @@ End Sub
 ' Displays Agreement on screen
 '---------------------------------------------------------------
 Public Sub DisplayAA()
-    Dim RngCrewNo As Range
-    Dim RngCrewName As Range
-    Dim RngRole As Range
-    Dim RngTemplateDate As Range
-    Dim RngContractType As Range
-    Dim RngHrsWk As Range
-    Dim RngNoWeeks As Range
-    Dim RngRevDate As Range
     Dim RngWeek1 As Range
     Dim i As Integer
     Dim x As Integer
@@ -292,29 +284,22 @@ Public Sub DisplayAA()
     
     Dim WeekArry(1 To 48, 1 To 7)
     
-    Set RngCrewNo = ShtFrontPage.Range("AY4")
-    Set RngCrewName = ShtFrontPage.Range("AY5")
-    Set RngRole = ShtFrontPage.Range("AY6")
-    Set RngTemplateDate = ShtFrontPage.Range("AY7")
-    Set RngContractType = ShtFrontPage.Range("AY8")
-    Set RngHrsWk = ShtFrontPage.Range("AY9")
-    Set RngNoWeeks = ShtFrontPage.Range("AY10")
-    Set RngRevDate = ShtFrontPage.Range("AY11")
     Set RngWeek1 = ShtFrontPage.Range("B4:AW10")
     
     ClearAA
     
-    RngCrewNo = pCrewMember.CrewNo
-    RngCrewName = pCrewMember.Name
-    RngRole = pCrewMember.Role
-    RngTemplateDate = pAADate
-    RngContractType = ModDBLookups.ContractLookUp(pContractType)
-    RngHrsWk = pHrsPW
-    RngNoWeeks = pNoWeeks
-    ShtFrontPage.CmoStation1.ListIndex = pStation1.StationNo - 1
-    ShtFrontPage.CmoStation2.ListIndex = pStation2.StationNo - 1
-    RngRevDate = pRevDateDue
-        
+    With ShtFrontPage
+        .TxtCrewNo = pCrewMember.CrewNo
+        .TxtName = pCrewMember.Name
+        .CmoRole.ListIndex = pCrewMember.Role
+        If pAADate <> 0 Then .TxtTemplateDate = pAADate Else .TxtTemplateDate = ""
+        .CmoContract.ListIndex = pContractType
+        .TxtNoWeeks = pNoWeeks
+        .CmoStation1.ListIndex = pStation1.StationNo - 1
+        .CmoStation2.ListIndex = pStation2.StationNo - 1
+        If pRevDateDue <> 0 Then .TxtReviewDate = pRevDateDue Else .TxtReviewDate = ""
+    End With
+    
     For w = 1 To pNoWeeks
         For i = 1 To 7
             For x = 1 To 48
@@ -324,14 +309,6 @@ Public Sub DisplayAA()
         RngWeek1.Offset((w * 8) - 8, 0) = Application.Transpose(WeekArry)
     Next
         
-    Set RngCrewNo = Nothing
-    Set RngCrewName = Nothing
-    Set RngRole = Nothing
-    Set RngTemplateDate = Nothing
-    Set RngContractType = Nothing
-    Set RngHrsWk = Nothing
-    Set RngNoWeeks = Nothing
-    Set RngRevDate = Nothing
     Set RngWeek1 = Nothing
 End Sub
 
@@ -348,52 +325,36 @@ End Sub
 ' Updates AA from screen
 '---------------------------------------------------------------
 Public Sub UpdateAA()
-    Dim RngCrewNo As Range
-    Dim RngCrewName As Range
-    Dim RngRole As Range
-    Dim RngTemplateDate As Range
-    Dim RngContractType As Range
-    Dim RngHrsWk As Range
-    Dim RngNoWeeks As Range
-    Dim RngRevDate As Range
     Dim RngWeek1 As Range
     Dim StationStr() As String
     Dim i As Integer
     Dim x As Integer
     Dim w As Integer
 
+    Set RngWeek1 = ShtFrontPage.Range("B4:AW10")
+    
     Dim WeekArry(1 To 48, 1 To 7)
     
-    Set RngCrewName = ShtFrontPage.Range("AY5")
-    Set RngRole = ShtFrontPage.Range("AY6")
-    Set RngTemplateDate = ShtFrontPage.Range("AY7")
-    Set RngContractType = ShtFrontPage.Range("AY8")
-    Set RngHrsWk = ShtFrontPage.Range("AY9")
-    Set RngNoWeeks = ShtFrontPage.Range("AY10")
-    Set RngRevDate = ShtFrontPage.Range("AY11")
-    Set RngWeek1 = ShtFrontPage.Range("B4:AW10")
-
-    pCrewMember.Name = RngCrewName
-    pCrewMember.Role = RngRole
-    pAADate = RngTemplateDate
-    If RngContractType = "Under 120hrs" Then pContractType = 1 Else pContractType = 2
-    pHrsPW = RngHrsWk
-    pNoWeeks = RngNoWeeks
-    pRevDateDue = RngRevDate
+    With ShtFrontPage
+        pCrewMember.Name = .TxtCrewNo
+        pCrewMember.Role = .CmoRole.ListIndex
+        
+        If .TxtTemplateDate <> "" Then pAADate = .TxtTemplateDate
+        
+        pContractType = .CmoContract.ListIndex
+        pHrsPW = 0
+        pNoWeeks = .TxtNoWeeks
+        
+        If .TxtReviewDate <> "" Then pRevDateDue = .TxtReviewDate
+        
+        If .CmoStation1.ListIndex <> -1 Then
+            pStation1 = ModDBLookups.StationLookUp(StationNo:=.CmoStation1.ListIndex + 1)
+        End If
     
-    If ShtFrontPage.CmoStation1.ListIndex <> -1 Then
-        With ShtFrontPage.CmoStation1
-            StationStr = Split(.List(.ListIndex, 1), " - ")
-            pStation1 = ModDBLookups.StationLookUp(Callsign:=StationStr(0))
-        End With
-    End If
-    
-    If ShtFrontPage.CmoStation2.ListIndex <> -1 Then
-        With ShtFrontPage.CmoStation2
-            StationStr = Split(.List(.ListIndex, 1), " - ")
-            pStation2 = ModDBLookups.StationLookUp(Callsign:=StationStr(0))
-        End With
-    End If
+        If .CmoStation2.ListIndex <> -1 Then
+            pStation2 = ModDBLookups.StationLookUp(StationNo:=.CmoStation2.ListIndex + 1)
+        End If
+    End With
     
     For w = 1 To pNoWeeks
         For i = 1 To 7
@@ -403,14 +364,6 @@ Public Sub UpdateAA()
         Next
     Next
     
-    Set RngCrewNo = Nothing
-    Set RngCrewName = Nothing
-    Set RngRole = Nothing
-    Set RngTemplateDate = Nothing
-    Set RngContractType = Nothing
-    Set RngHrsWk = Nothing
-    Set RngNoWeeks = Nothing
-    Set RngRevDate = Nothing
     Set RngWeek1 = Nothing
 
 End Sub

@@ -12,7 +12,7 @@ Attribute VB_Exposed = True
 '===============================================================
 ' v1.0.0 - Initial Version
 '---------------------------------------------------------------
-' Date - 20 Apr 18
+' Date - 27 Apr 18
 '===============================================================
 
 Option Explicit
@@ -48,8 +48,18 @@ Public Function Initialise() As Boolean
         Loop
     End With
 
+    With CmoContract
+        .Clear
+        .AddItem "Under 120Hrs"
+        .AddItem "Over 120hrs"
+    End With
 
-
+    With CmoRole
+        .Clear
+        .AddItem "FF"
+        .AddItem "CM"
+        .AddItem "WM"
+    End With
     Initialise = True
 
 Exit Function
