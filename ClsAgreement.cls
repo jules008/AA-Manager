@@ -284,7 +284,7 @@ Public Sub Display()
     
     Dim WeekArry(1 To 48, 1 To 7)
     
-    Set RngWeek1 = ShtFrontPage.Range("B4:AW10")
+    Set RngWeek1 = ShtFrontPage.Range(RNG_WEEK_1)
     
     Clear
     
@@ -299,6 +299,8 @@ Public Sub Display()
         .CmoStation2.ListIndex = pStation2.StationNo - 1
         If pRevDateDue <> 0 Then .TxtReviewDate = pRevDateDue Else .TxtReviewDate = ""
     End With
+    
+    If Not ShtFrontPage.FormatWkRnge(pNoWeeks) Then err.Raise HANDLED_ERROR
     
     For w = 1 To pNoWeeks
         For i = 1 To 7
@@ -331,7 +333,7 @@ Public Sub Update()
     Dim x As Integer
     Dim w As Integer
 
-    Set RngWeek1 = ShtFrontPage.Range("B4:AW10")
+    Set RngWeek1 = ShtFrontPage.Range(RNG_WEEK_1)
     
     Dim WeekArry(1 To 48, 1 To 7)
     
@@ -393,6 +395,7 @@ Public Sub CreateNew()
                     DBGet
                     Display
                     Continue = True
+                    Exit Sub
                 Else
                     Continue = False
                 End If
@@ -403,5 +406,7 @@ Public Sub CreateNew()
     Loop
     
     pNoWeeks = Application.InputBox("How many weeks in the template cycle?", APP_NAME)
+    
+    If Not ShtFrontPage.FormatWkRnge(pNoWeeks) Then err.Raise HANDLED_ERROR
     
 End Sub

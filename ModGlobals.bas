@@ -26,6 +26,7 @@ Public Const MAINT_MSG As String = ""
 Public Const SEND_ERR_MSG As Boolean = False
 Public Const TEST_PREFIX As String = "TEST - "
 Public Const FILE_ERROR_LOG As String = "Error.log"
+Public Const RNG_WEEK_1 As String = "B4:AW10"
 Public Const VERSION = "V0.0.0"
 Public Const DB_VER = "V0.0.0"
 Public Const VER_DATE = ""

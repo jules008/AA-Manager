@@ -33,5 +33,5 @@ End Sub
 
 Private Sub BtnGenProc_Click()
     FrmProcGen.Show
-    Unload FrmProcGen
+    Unload Me
 End Sub

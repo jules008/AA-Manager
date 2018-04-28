@@ -65,7 +65,12 @@ Private Sub BtnPaste_Click()
     Txt = Txt & ")"
     
     If OptFunction Then Txt = Txt & " As " & TxtRtnVarType
-
+    If OptEntryPoint Then
+        Txt = Txt & Chr(NEWLINE)
+        Txt = Txt & Chr(INTAB) & "Dim ErrNo As Integer"
+        Txt = Txt & Chr(NEWLINE)
+    End If
+    
     Txt = Txt & Chr(NEWLINE)
     Txt = Txt & Chr(INTAB) & "Const StrPROCEDURE As String = """ & TxtProcName & "()"" "
     
@@ -73,8 +78,9 @@ Private Sub BtnPaste_Click()
     Txt = Txt & Chr(NEWLINE)
     
     Txt = Txt & Chr(INTAB) & "On Error GoTo ErrorHandler"
-    
     Txt = Txt & Chr(NEWLINE)
+    Txt = Txt & Chr(NEWLINE)
+    If OptEntryPoint Then Txt = Txt & "Restart:"
     Txt = Txt & Chr(NEWLINE)
     Txt = Txt & Chr(NEWLINE)
     Txt = Txt & Chr(NEWLINE)
@@ -82,7 +88,11 @@ Private Sub BtnPaste_Click()
     Txt = Txt & Chr(NEWLINE)
     
     'Error handling
+    Txt = Txt & Chr(NEWLINE)
+    Txt = Txt & Chr(NEWLINE)
     If OptNonEntry Then Txt = Txt & Chr(INTAB) & TxtProcName & " = True"
+    If OptEntryPoint Then Txt = Txt & "GracefulExit:"
+    Txt = Txt & Chr(NEWLINE)
     Txt = Txt & Chr(NEWLINE)
     Txt = Txt & Chr(NEWLINE)
     If OptNonEntry Then Txt = Txt & "Exit Function"
@@ -103,6 +113,17 @@ Private Sub BtnPaste_Click()
     Txt = Txt & "ErrorHandler:"
     Txt = Txt & Chr(NEWLINE)
     If OptEntryPoint Then
+        Txt = Txt & Chr(INTAB) & "If Err.Number >= 1000 And Err.Number <= 1500 Then"
+        Txt = Txt & Chr(NEWLINE)
+        Txt = Txt & Chr(INTAB) & Chr(INTAB) & "ErrNo = err.Number"
+        Txt = Txt & Chr(NEWLINE)
+        Txt = Txt & Chr(INTAB) & Chr(INTAB) & "CustomErrorHandler (err.Number)"
+        Txt = Txt & Chr(NEWLINE)
+        Txt = Txt & Chr(INTAB) & Chr(INTAB) & "If ErrNo = SYSTEM_RESTART Then Resume Restart Else Resume GracefulExit"
+        Txt = Txt & Chr(NEWLINE)
+        Txt = Txt & Chr(INTAB) & "End If"
+        Txt = Txt & Chr(NEWLINE)
+        Txt = Txt & Chr(NEWLINE)
         Txt = Txt & Chr(INTAB) & "If CentralErrorHandler(StrMODULE, StrPROCEDURE, , True) Then"
     End If
     If OptNonEntry Then

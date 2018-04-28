@@ -64,6 +64,9 @@ Public Function Initialise() As Boolean
         .AddItem "CM"
         .AddItem "WM"
     End With
+    
+    Set RstStation = Nothing
+    
     Initialise = True
 
 Exit Function
@@ -97,7 +100,7 @@ Private Sub BtnLoadAA_Click()
 
     SelectedPerson = FrmPersonPicker.ShowForm
      
-    If SelectedPerson.CrewNo = "" Then Err.Raise HANDLED_ERROR, , "No person returned from Person Picker Form"
+    If SelectedPerson.CrewNo = "" Then err.Raise HANDLED_ERROR, , "No person returned from Person Picker Form"
     
     With Agreement
         .CrewMember = SelectedPerson
@@ -133,7 +136,7 @@ Private Sub BtnNewAA_Click()
 
 Restart:
 
-    If Agreement Is Nothing Then Err.Raise SYSTEM_RESTART
+    If Agreement Is Nothing Then err.Raise SYSTEM_RESTART
     
     Agreement.CreateNew
     
@@ -148,10 +151,44 @@ ErrorExit:
 Exit Sub
 
 ErrorHandler:
-    If Err.Number >= 1000 And Err.Number <= 1500 Then
-        If CustomErrorHandler(Err.Number) Then Resume Restart
+    If err.Number >= 1000 And err.Number <= 1500 Then
+        If CustomErrorHandler(err.Number) Then Resume Restart
     End If
     
+    If CentralErrorHandler(StrMODULE, StrPROCEDURE, , True) Then
+        Stop
+        Resume
+    Else
+        Resume ErrorExit
+    End If
+End Sub
+
+' ===============================================================
+' BtnUpdateAA_Click
+' Updates any changes to Agreement
+' ---------------------------------------------------------------
+Private Sub BtnUpdateAA_Click()
+    Const StrPROCEDURE As String = "BtnUpdateAA_Click()"
+
+    On Error GoTo ErrorHandler
+
+    If Agreement Is Nothing Then err.Raise GENERIC_ERROR, , "Agreement Class is empty"
+
+    With Agreement
+        .Update
+        .DBSave
+    End With
+    
+    MsgBox ""
+Exit Sub
+
+ErrorExit:
+
+    '***CleanUpCode***
+
+Exit Sub
+
+ErrorHandler:
     If CentralErrorHandler(StrMODULE, StrPROCEDURE, , True) Then
         Stop
         Resume
@@ -180,7 +217,7 @@ Public Function Clear() As Boolean
 
     On Error GoTo ErrorHandler
 
-    Set RngWk1 = Range("B4:AW10")
+    Set RngWk1 = Range(RNG_WEEK_1)
 
     For i = 0 To 11
         RngWk1.Offset(i * 8, 0).ClearContents
@@ -207,6 +244,62 @@ ErrorExit:
     
     Set RngWk1 = Nothing
     
+Exit Function
+
+ErrorHandler:
+    If CentralErrorHandler(StrMODULE, StrPROCEDURE) Then
+        Stop
+        Resume
+    Else
+        Resume ErrorExit
+    End If
+End Function
+
+' ===============================================================
+' FormatWkRnge
+' Formats the given week range correctly and sets protection
+' ---------------------------------------------------------------
+Public Function FormatWkRnge(NoWeeks As Integer) As Boolean
+    Dim RngWeek1 As Range
+    Dim RngWeek As Range
+    Dim i As Integer
+    
+    Const StrPROCEDURE As String = "FormatWkRnge()"
+
+    On Error GoTo ErrorHandler
+    
+    Set RngWeek1 = ShtFrontPage.Range(RNG_WEEK_1)
+        
+    For i = 1 To NoWeeks
+        Set RngWeek = RngWeek1.Offset((i * 8) - 8, 0)
+        With RngWeek
+            .Locked = True
+            .Interior.Color = COLOUR_1
+        End With
+    Next
+    
+    For i = NoWeeks + 1 To 12
+        Set RngWeek = RngWeek1.Offset((i * 8) - 8, 0)
+        With RngWeek
+            .Locked = False
+            .Interior.Color = COLOUR_2
+        End With
+    Next
+
+    FormatWkRnge = True
+    
+    Set RngWeek1 = Nothing
+    Set RngWeek = Nothing
+
+Exit Function
+
+ErrorExit:
+
+    Set RngWeek1 = Nothing
+    Set RngWeek = Nothing
+    
+    FormatWkRnge = False
+
 Exit Function
 
 ErrorHandler:
