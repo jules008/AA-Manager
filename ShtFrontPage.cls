@@ -100,7 +100,7 @@ Private Sub BtnLoadAA_Click()
 
     SelectedPerson = FrmPersonPicker.ShowForm
      
-    If SelectedPerson.CrewNo = "" Then err.Raise HANDLED_ERROR, , "No person returned from Person Picker Form"
+    If SelectedPerson.CrewNo = "" Then Err.Raise HANDLED_ERROR, , "No person returned from Person Picker Form"
     
     With Agreement
         .CrewMember = SelectedPerson
@@ -136,7 +136,7 @@ Private Sub BtnNewAA_Click()
 
 Restart:
 
-    If Agreement Is Nothing Then err.Raise SYSTEM_RESTART
+    If Agreement Is Nothing Then Err.Raise SYSTEM_RESTART
     
     Agreement.CreateNew
     
@@ -151,8 +151,8 @@ ErrorExit:
 Exit Sub
 
 ErrorHandler:
-    If err.Number >= 1000 And err.Number <= 1500 Then
-        If CustomErrorHandler(err.Number) Then Resume Restart
+    If Err.Number >= 1000 And Err.Number <= 1500 Then
+        If CustomErrorHandler(Err.Number) Then Resume Restart
     End If
     
     If CentralErrorHandler(StrMODULE, StrPROCEDURE, , True) Then
@@ -168,18 +168,42 @@ End Sub
 ' Updates any changes to Agreement
 ' ---------------------------------------------------------------
 Private Sub BtnUpdateAA_Click()
+    Dim ErrNo As Integer
+    Dim Response As Integer
+    
     Const StrPROCEDURE As String = "BtnUpdateAA_Click()"
 
     On Error GoTo ErrorHandler
 
-    If Agreement Is Nothing Then err.Raise GENERIC_ERROR, , "Agreement Class is empty"
+Restart:
 
-    With Agreement
-        .Update
-        .DBSave
-    End With
+    If Agreement Is Nothing Then Err.Raise SYSTEM_RESTART, , "Agreement Class is empty"
+
+    Response = MsgBox("Are you sure you want to update the changes to the Agreement?  Once saved, the changes cannot be undone!", vbExclamation + vbYesNo, APP_NAME)
     
-    MsgBox ""
+    If Response = 6 Then
+        With Agreement
+            .Update
+            .DBSave
+        End With
+        MsgBox "The Agreement has been saved successfully", vbInformation, APP_NAME
+    Else
+        Response = MsgBox("Would you like to discard the changes and revert back to the saved Agreement?", vbYesNo + vbInformation, APP_NAME)
+        
+        If Response = 6 Then
+            With Agreement
+                .DBGet
+                .Display
+            End With
+        End If
+    End If
+
+
+
+
+GracefulExit:
+
+
 Exit Sub
 
 ErrorExit:
@@ -189,6 +213,12 @@ ErrorExit:
 Exit Sub
 
 ErrorHandler:
+    If Err.Number >= 1000 And Err.Number <= 1500 Then
+        ErrNo = Err.Number
+        CustomErrorHandler (Err.Number)
+        If ErrNo = SYSTEM_RESTART Then Resume Restart Else Resume GracefulExit
+    End If
+
     If CentralErrorHandler(StrMODULE, StrPROCEDURE, , True) Then
         Stop
         Resume

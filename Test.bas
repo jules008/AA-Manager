@@ -31,3 +31,8 @@ Public Sub TestStnLookUp()
     
     Debug.Print Stn.StationCallSign, Stn.StationName, Stn.StationNo
 End Sub
+
+
+Public Sub A1Generator()
+    FrmGenerator.Show
+End Sub

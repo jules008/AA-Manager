@@ -300,7 +300,7 @@ Public Sub Display()
         If pRevDateDue <> 0 Then .TxtReviewDate = pRevDateDue Else .TxtReviewDate = ""
     End With
     
-    If Not ShtFrontPage.FormatWkRnge(pNoWeeks) Then err.Raise HANDLED_ERROR
+    If Not ShtFrontPage.FormatWkRnge(pNoWeeks) Then Err.Raise HANDLED_ERROR
     
     For w = 1 To pNoWeeks
         For i = 1 To 7
@@ -407,6 +407,6 @@ Public Sub CreateNew()
     
     pNoWeeks = Application.InputBox("How many weeks in the template cycle?", APP_NAME)
     
-    If Not ShtFrontPage.FormatWkRnge(pNoWeeks) Then err.Raise HANDLED_ERROR
+    If Not ShtFrontPage.FormatWkRnge(pNoWeeks) Then Err.Raise HANDLED_ERROR
     
 End Sub
