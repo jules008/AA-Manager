@@ -338,7 +338,7 @@ Public Sub Update()
     Dim WeekArry(1 To 48, 1 To 7)
     
     With ShtFrontPage
-        pCrewMember.Name = .TxtCrewNo
+        pCrewMember.Name = .TxtName
         pCrewMember.Role = .CmoRole.ListIndex
         
         If .TxtTemplateDate <> "" Then pAADate = .TxtTemplateDate

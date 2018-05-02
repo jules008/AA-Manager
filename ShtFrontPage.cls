@@ -88,13 +88,13 @@ ErrorHandler:
 End Function
 
 ' ===============================================================
-' BtnLoadAA_Click
+' BtnLoadAA
 ' Views AA for entered name
 ' ---------------------------------------------------------------
-Private Sub BtnLoadAA_Click()
+Private Sub BtnLoadAA()
     Dim SelectedPerson As TypeCrewMember
     
-    Const StrPROCEDURE As String = "BtnLoadAA_Click()"
+    Const StrPROCEDURE As String = "BtnLoadAA()"
 
     On Error GoTo ErrorHandler
 
@@ -126,11 +126,11 @@ ErrorHandler:
 End Sub
 
 ' ===============================================================
-' BtnNewAA_Click
+' BtnNewAA
 ' Creates a new agreement
 ' ---------------------------------------------------------------
-Private Sub BtnNewAA_Click()
-    Const StrPROCEDURE As String = "BtnNewAA_Click()"
+Private Sub BtnNewAA()
+    Const StrPROCEDURE As String = "BtnNewAA()"
 
     On Error GoTo ErrorHandler
 
@@ -164,14 +164,14 @@ ErrorHandler:
 End Sub
 
 ' ===============================================================
-' BtnUpdateAA_Click
+' BtnUpdateAA
 ' Updates any changes to Agreement
 ' ---------------------------------------------------------------
-Private Sub BtnUpdateAA_Click()
+Private Sub BtnUpdateAA()
     Dim ErrNo As Integer
     Dim Response As Integer
     
-    Const StrPROCEDURE As String = "BtnUpdateAA_Click()"
+    Const StrPROCEDURE As String = "BtnUpdateAA()"
 
     On Error GoTo ErrorHandler
 
