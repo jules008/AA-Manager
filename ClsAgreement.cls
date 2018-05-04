@@ -188,20 +188,24 @@ Public Sub DBSave()
     Set RstTemplate = ModDatabase.SQLQuery("SELECT * FROM TblTemplate WHERE CrewNo = '" & pCrewMember.CrewNo & "'")
     Set RstTemplateDetail = ModDatabase.SQLQuery("TblTemplateDetail")
     Set RstTemplateStns = ModDatabase.SQLQuery("TblTemplateStns")
-   
+
     With RstTemplate
-        If .RecordCount > 0 Then
-            .Edit
+        If .RecordCount = 0 Then
+            .AddNew
             !CrewNo = pCrewMember.CrewNo
-            !CrewName = pCrewMember.Name
-            !Role = pCrewMember.Role
-            If pAADate <> 0 Then !TemplateDate = pAADate
-            !ContractType = pContractType
-            !HrsPW = pHrsPW
-            !NoWeeks = pNoWeeks
-            !RevDateDue = pRevDateDue
-            .Update
+        Else
+            .Edit
         End If
+        
+        !CrewName = pCrewMember.Name
+        !Role = pCrewMember.Role
+        If pAADate <> 0 Then !TemplateDate = pAADate
+        !ContractType = pContractType
+        !HrsPW = pHrsPW
+        !NoWeeks = pNoWeeks
+        !RevDateDue = pRevDateDue
+        .Update
+        
     End With
             
     DB.Execute ("DELETE FROM TblTemplateStns WHERE CrewNo = '" & pCrewMember.CrewNo & "'")
@@ -286,6 +290,8 @@ Public Sub Display()
     
     Set RngWeek1 = ShtFrontPage.Range(RNG_WEEK_1)
     
+    Application.ScreenUpdating = False
+    
     Clear
     
     With ShtFrontPage
@@ -310,6 +316,8 @@ Public Sub Display()
         Next
         RngWeek1.Offset((w * 8) - 8, 0) = Application.Transpose(WeekArry)
     Next
+    
+    Application.ScreenUpdating = True
         
     Set RngWeek1 = Nothing
 End Sub
@@ -380,7 +388,10 @@ Public Sub CreateNew()
     Dim Continue As Boolean
     
     Do While Continue = False
-        CrewNo = Application.InputBox("Please enter the Brigade No for the new Template", APP_NAME)
+        CrewNo = Application.InputBox("Please enter the Brigade No for the new Template", APP_NAME, Type:=7)
+        
+        If CrewNo = "False" Then Exit Sub
+        
         pCrewMember = ModDBLookups.PersonLookUp(CrewNo)
         
         'check to see whether crewmember already has a template in the DB.  If so, offer the opportunity to open.
@@ -400,6 +411,7 @@ Public Sub CreateNew()
                     Continue = False
                 End If
             Else
+                pCrewMember.CrewNo = CrewNo
                 Continue = True
             End If
         End With
@@ -408,5 +420,8 @@ Public Sub CreateNew()
     pNoWeeks = Application.InputBox("How many weeks in the template cycle?", APP_NAME)
     
     If Not ShtFrontPage.FormatWkRnge(pNoWeeks) Then Err.Raise HANDLED_ERROR
+    
+    Display
+    DBSave
     
 End Sub

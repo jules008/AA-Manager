@@ -73,17 +73,17 @@ Public MailSystem As ClsMailSystem
 ' ===============================================================
 ' Colours
 ' ---------------------------------------------------------------
-Public Const COLOUR_1 As Long = 5525013
-Public Const COLOUR_2 As Long = 2369842
-Public Const COLOUR_3 As Long = 16777215
-Public Const COLOUR_4 As Long = 10396448
-Public Const COLOUR_5 As Long = 5266544
-Public Const COLOUR_6 As Long = 3450623
-Public Const COLOUR_7 As Long = 6893787
-Public Const COLOUR_8 As Long = 16056312
-Public Const COLOUR_9 As Long = 12439241
-Public Const COLOUR_10 As Long = 7864234
-Public Const COLOUR_11 As Long = 52479
+Public Const COLOUR_1 As Long = 4780482
+Public Const COLOUR_2 As Long = 5731910
+Public Const COLOUR_3 As Long = 14077135
+Public Const COLOUR_4 As Long = 16775159
+Public Const COLOUR_5 As Long = 2435998
+Public Const COLOUR_6 As Long = 0
+Public Const COLOUR_7 As Long = 16777215
+Public Const COLOUR_8 As Long = 0
+Public Const COLOUR_9 As Long = 0
+Public Const COLOUR_10 As Long = 0
+Public Const COLOUR_11 As Long = 0
 
 ' ===============================================================
 ' Enum Declarations
