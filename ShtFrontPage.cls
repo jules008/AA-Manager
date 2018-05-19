@@ -95,7 +95,9 @@ Private Sub BtnLoadAA()
     On Error GoTo ErrorHandler
 
     SelectedPerson = FrmPersonPicker.ShowForm
-     
+    
+    If Agreement Is Nothing Then Err.Raise SYSTEM_RESTART
+    
     If SelectedPerson.CrewNo <> "" Then
         With Agreement
             .CrewMember = SelectedPerson
