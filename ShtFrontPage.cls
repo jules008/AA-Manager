@@ -48,6 +48,14 @@ Public Function Initialise() As Boolean
         Loop
     End With
     
+    With CmoNoWeeks
+        .Clear
+        .AddItem "Over 1 Week"
+        For i = 2 To 12
+            .AddItem "Over " & i & " Weeks"
+        Next
+    End With
+    
     Me.Unprotect
     If Not DEV_MODE Then
         Me.Range("AZ:BA").EntireColumn.Hidden = True
@@ -332,7 +340,7 @@ Public Function Clear() As Boolean
 
     TxtCrewNo = ""
     TxtName = ""
-    TxtNoWeeks = ""
+    CmoNoWeeks = ""
     TxtReviewDate = ""
     TxtTemplateDate = ""
     CmoContract = ""
@@ -468,8 +476,6 @@ Public Function FormatWkRnge(NoWeeks As Integer) As Boolean
         End With
     Next
 
-    TxtNoWeeks = NoWeeks
-        
     Me.Range("C4").Select
             
     FormatWkRnge = True

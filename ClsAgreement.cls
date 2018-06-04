@@ -298,7 +298,7 @@ Public Sub Display()
         .CmoRole.ListIndex = pCrewMember.Role
         If pAADate <> 0 Then .TxtTemplateDate = pAADate Else .TxtTemplateDate = ""
         .CmoContract.ListIndex = pContractType
-        .TxtNoWeeks = pNoWeeks
+        .CmoNoWeeks.ListIndex = pNoWeeks - 1
         .CmoStation1.ListIndex = pStation1.StationNo - 1
         .CmoStation2.ListIndex = pStation2.StationNo - 1
         If pRevDateDue <> 0 Then .TxtReviewDate = pRevDateDue Else .TxtReviewDate = ""
@@ -356,7 +356,7 @@ Public Sub Update()
         
         pContractType = .CmoContract.ListIndex
         pHrsPW = 0
-        pNoWeeks = .TxtNoWeeks
+        pNoWeeks = .CmoNoWeeks.ListIndex + 1
         
         If .TxtReviewDate <> "" Then pRevDateDue = .TxtReviewDate
         
