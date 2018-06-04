@@ -12,7 +12,7 @@ Attribute VB_Exposed = True
 '===============================================================
 ' v1.0.0 - Initial Version
 '---------------------------------------------------------------
-' Date - 27 Apr 18
+' Date - 04 Jun 18
 '===============================================================
 
 Option Explicit
@@ -47,7 +47,13 @@ Public Function Initialise() As Boolean
             i = i + 1
         Loop
     End With
-
+    
+    If Not DEV_MODE Then
+        Me.Range("AZ:BA").EntireColumn.Hidden = True
+    Else
+        Me.Range("AZ:BA").EntireColumn.Hidden = False
+    End If
+    
     With CmoContract
         .Clear
         .AddItem "Under 120Hrs"
@@ -99,17 +105,23 @@ Private Sub BtnLoadAA()
     If Agreement Is Nothing Then Err.Raise SYSTEM_RESTART
     
     If SelectedPerson.CrewNo <> "" Then
+        
+        Application.ScreenUpdating = False
+        
         With Agreement
             .CrewMember = SelectedPerson
             .DBGet
+            .Clear
             .Display
         End With
+        
+        Application.ScreenUpdating = True
+
     End If
 Exit Sub
 
 ErrorExit:
 
-    '***CleanUpCode***
     Application.ScreenUpdating = True
 
 Exit Sub
@@ -138,16 +150,21 @@ Restart:
     
     Set Agreement = Nothing
     Set Agreement = New ClsAgreement
-    Agreement.Display
+    
+    Application.ScreenUpdating = False
+    
+    Agreement.Clear
     Agreement.CreateNew
     
 GracefulExit:
+    
+    Application.ScreenUpdating = True
 
 Exit Sub
 
 ErrorExit:
 
-    '***CleanUpCode***
+    Application.ScreenUpdating = True
 
 Exit Sub
 
@@ -208,7 +225,6 @@ Exit Sub
 ErrorExit:
 
     '***CleanUpCode***
-    Application.ScreenUpdating = False
 
 Exit Sub
 
@@ -248,7 +264,7 @@ Restart:
             Exit Sub
         
         Case Is = 1
-            If Not Intersect(Target, Range("B4:AW98")) Is Nothing Then
+            If Not Intersect(Target, Range("C4:AX98")) Is Nothing Then
                 If Not FormatCells(Target) Then Err.Raise HANDLED_ERROR
             End If
         
@@ -305,10 +321,10 @@ Public Function Clear() As Boolean
     On Error GoTo ErrorHandler
     
     Set RngWk1 = Range(RNG_WEEK_1)
-
+       
     For i = 0 To 11
         Me.Unprotect
-        RngWk1.Offset(i * 8, 0).ClearContents
+        RngWk1.Offset(i * 9, 0).ClearContents
     Next
 
     TxtCrewNo = ""
@@ -321,7 +337,7 @@ Public Function Clear() As Boolean
     CmoStation1 = ""
     CmoStation2 = ""
     
-    Me.Protect
+    If PROTECT_ON Then Me.Protect
     
     Clear = True
     
@@ -353,6 +369,13 @@ End Function
 Public Function FormatWkRnge(NoWeeks As Integer) As Boolean
     Dim RngWeek1 As Range
     Dim RngWeek As Range
+    Dim RngDay As Range
+    Dim RngDay1 As Range
+    Dim RngTime As Range
+    Dim RngTime1 As Range
+    Dim RngWkNo As Range
+    Dim RngWkNo1 As Range
+    
     Dim i As Integer
     
     Const StrPROCEDURE As String = "FormatWkRnge()"
@@ -362,30 +385,100 @@ Public Function FormatWkRnge(NoWeeks As Integer) As Boolean
     Me.Unprotect
     
     Set RngWeek1 = ShtFrontPage.Range(RNG_WEEK_1)
-        
+    Set RngTime1 = ShtFrontPage.Range(RNG_TIME_1)
+    Set RngDay1 = ShtFrontPage.Range(RNG_DAY_1)
+    Set RngWkNo1 = ShtFrontPage.Range(RNG_WKNO_1)
+    
     For i = 1 To NoWeeks
-        Set RngWeek = RngWeek1.Offset((i * 8) - 8, 0)
+    
+        'Format timeslots
+        Set RngWeek = RngWeek1.Offset((i * 9) - 9, 0)
+        RngWeek.Select
         With RngWeek
             .Locked = False
             .Interior.Color = COLOUR_7
         End With
+    
+        'Format Times
+        Set RngTime = RngTime1.Offset((i * 9) - 9, 0)
+        RngTime.Select
+        With RngTime
+            .Locked = False
+            .Interior.Color = COLOUR_8
+            .Font.Color = COLOUR_2
+        End With
+    
+        'Format Days
+        Set RngDay = RngDay1.Offset((i * 9) - 9, 0)
+        RngDay.Select
+        With RngDay
+            .Locked = False
+            .Interior.Color = COLOUR_8
+            .Font.Color = COLOUR_2
+        End With
+        
+        'Format Week No
+        Set RngWkNo = RngWkNo1.Offset((i * 9) - 9, 0)
+        RngWkNo.Select
+        With RngWkNo
+            .Locked = False
+            .Interior.Color = COLOUR_2
+            .Font.Color = COLOUR_8
+        End With
     Next
     
     For i = NoWeeks + 1 To 12
-        Set RngWeek = RngWeek1.Offset((i * 8) - 8, 0)
+        Set RngWeek = RngWeek1.Offset((i * 9) - 9, 0)
+        RngWeek.Select
         With RngWeek
             .Locked = True
             .Interior.Color = COLOUR_4
         End With
+    
+        'Format Times
+        Set RngTime = RngTime1.Offset((i * 9) - 9, 0)
+        RngTime.Select
+        With RngTime
+            .Locked = True
+            .Interior.Color = COLOUR_4
+            .Font.Color = COLOUR_4
+        End With
+    
+        'Format Days
+        Set RngDay = RngDay1.Offset((i * 9) - 9, 0)
+        RngDay.Select
+        With RngDay
+            .Locked = True
+            .Interior.Color = COLOUR_4
+            .Font.Color = COLOUR_4
+        End With
+        
+        'Format Week No
+        Set RngWkNo = RngWkNo1.Offset((i * 9) - 9, 0)
+        RngWkNo.Select
+        With RngWkNo
+            .Locked = False
+            .Interior.Color = COLOUR_4
+            .Font.Color = COLOUR_4
+        End With
     Next
 
     TxtNoWeeks = NoWeeks
-    
+        
+    Me.Range("C4").Select
+            
     FormatWkRnge = True
     
     Set RngWeek1 = Nothing
     Set RngWeek = Nothing
-    Me.Protect
+    Set RngDay = Nothing
+    Set RngTime = Nothing
+    Set RngDay1 = Nothing
+    Set RngTime1 = Nothing
+    Set RngWkNo = Nothing
+    Set RngWkNo1 = Nothing
+    
+    If PROTECT_ON Then Me.Protect
     
 Exit Function
 
@@ -393,6 +486,13 @@ ErrorExit:
 
     Set RngWeek1 = Nothing
     Set RngWeek = Nothing
+    Set RngDay = Nothing
+    Set RngTime = Nothing
+    Set RngDay1 = Nothing
+    Set RngTime1 = Nothing
+    Set RngWkNo = Nothing
+    Set RngWkNo1 = Nothing
+        
     Me.Protect
     
     FormatWkRnge = False
@@ -441,7 +541,7 @@ Private Function FormatCells(RngTarget As Range) As Boolean
     End Select
     FormatCells = True
 
-    Me.Protect
+    If PROTECT_ON Then Me.Protect
     
 Exit Function
 
@@ -500,14 +600,12 @@ Private Sub FillStnCells(Stn As Integer)
 
 Restart:
     
-    Application.ScreenUpdating = False
-    
     Set RngSel = Selection
     Debug.Print RngSel.Address
     
     If Agreement Is Nothing Then Err.Raise SYSTEM_RESTART
     
-    If Intersect(RngSel, Range("B4:AW98")) Is Nothing Then Exit Sub
+    If Intersect(RngSel, Range("C4:AX98")) Is Nothing Then Exit Sub
     
     If Selection.Cells.Count = 0 Then Exit Sub
 
@@ -516,15 +614,12 @@ Restart:
     Next
     RngSel.Cells(1, 1).Select
     
-    Application.ScreenUpdating = True
 GracefulExit:
 
 Exit Sub
 
 ErrorExit:
-
-    Application.ScreenUpdating = False
-
+    
     Set RngSel = Nothing
     
 Exit Sub

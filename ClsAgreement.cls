@@ -11,7 +11,7 @@ Attribute VB_Exposed = False
 ' Class ClsAgreement
 ' v0,0 - Initial Version
 '---------------------------------------------------------------
-' Date - 27 Apr 18
+' Date - 04 Jun 18
 '===============================================================
 ' Methods
 '---------------------------------------------------------------
@@ -286,14 +286,12 @@ Public Sub Display()
     Dim x As Integer
     Dim w As Integer
     
+    On Error GoTo ErrorHandler
+    
     Dim WeekArry(1 To 48, 1 To 7)
     
     Set RngWeek1 = ShtFrontPage.Range(RNG_WEEK_1)
-    
-    Application.ScreenUpdating = False
-    
-    Clear
-    
+       
     With ShtFrontPage
         .TxtCrewNo = pCrewMember.CrewNo
         .TxtName = pCrewMember.Name
@@ -314,11 +312,15 @@ Public Sub Display()
                 WeekArry(x, i) = pTimeSlot(x, i + (w * 7) - 7)
             Next
         Next
-        RngWeek1.Offset((w * 8) - 8, 0) = Application.Transpose(WeekArry)
+        RngWeek1.Offset((w * 9) - 9, 0) = Application.Transpose(WeekArry)
     Next
     
-    Application.ScreenUpdating = True
-        
+    Set RngWeek1 = Nothing
+    
+Exit Sub
+
+ErrorHandler:
+
     Set RngWeek1 = Nothing
 End Sub
 
@@ -421,7 +423,7 @@ Public Sub CreateNew()
     
     If Not ShtFrontPage.FormatWkRnge(pNoWeeks) Then Err.Raise HANDLED_ERROR
     
-    Display
+'    Display
     DBSave
     
 End Sub
