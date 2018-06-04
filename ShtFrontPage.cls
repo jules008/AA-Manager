@@ -403,7 +403,7 @@ Public Function FormatWkRnge(NoWeeks As Integer) As Boolean
         Set RngTime = RngTime1.Offset((i * 9) - 9, 0)
         RngTime.Select
         With RngTime
-            .Locked = False
+            .Locked = True
             .Interior.Color = COLOUR_8
             .Font.Color = COLOUR_2
         End With
@@ -412,7 +412,7 @@ Public Function FormatWkRnge(NoWeeks As Integer) As Boolean
         Set RngDay = RngDay1.Offset((i * 9) - 9, 0)
         RngDay.Select
         With RngDay
-            .Locked = False
+            .Locked = True
             .Interior.Color = COLOUR_8
             .Font.Color = COLOUR_2
         End With
@@ -421,7 +421,7 @@ Public Function FormatWkRnge(NoWeeks As Integer) As Boolean
         Set RngWkNo = RngWkNo1.Offset((i * 9) - 9, 0)
         RngWkNo.Select
         With RngWkNo
-            .Locked = False
+            .Locked = True
             .Interior.Color = COLOUR_2
             .Font.Color = COLOUR_8
         End With
@@ -457,7 +457,7 @@ Public Function FormatWkRnge(NoWeeks As Integer) As Boolean
         Set RngWkNo = RngWkNo1.Offset((i * 9) - 9, 0)
         RngWkNo.Select
         With RngWkNo
-            .Locked = False
+            .Locked = True
             .Interior.Color = COLOUR_4
             .Font.Color = COLOUR_4
         End With
