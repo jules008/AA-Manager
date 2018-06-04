@@ -314,7 +314,8 @@ Public Sub Display()
         Next
         RngWeek1.Offset((w * 9) - 9, 0) = Application.Transpose(WeekArry)
     Next
-    
+        
+    If Not ShtFrontPage.UpdateTotals Then Err.Raise HANDLED_ERROR
     Set RngWeek1 = Nothing
     
 Exit Sub

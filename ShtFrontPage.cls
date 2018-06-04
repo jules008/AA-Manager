@@ -48,11 +48,13 @@ Public Function Initialise() As Boolean
         Loop
     End With
     
+    Me.Unprotect
     If Not DEV_MODE Then
         Me.Range("AZ:BA").EntireColumn.Hidden = True
     Else
         Me.Range("AZ:BA").EntireColumn.Hidden = False
     End If
+    If PROTECT_ON Then Me.Protect
     
     With CmoContract
         .Clear
@@ -75,6 +77,7 @@ Exit Function
 
 ErrorExit:
 
+    If PROTECT_ON Then Me.Protect
     Set RstStation = Nothing
     Initialise = False
 
@@ -336,7 +339,9 @@ Public Function Clear() As Boolean
     CmoRole = ""
     CmoStation1 = ""
     CmoStation2 = ""
-    
+        
+    If Not ShtFrontPage.UpdateTotals Then Err.Raise HANDLED_ERROR
+
     If PROTECT_ON Then Me.Protect
     
     Clear = True
@@ -638,3 +643,37 @@ ErrorHandler:
         Resume ErrorExit
     End If
 End Sub
+
+' ===============================================================
+' UpdateTotals
+' Updates the hrs/wk totals
+' ---------------------------------------------------------------
+Public Function UpdateTotals() As Boolean
+    Const StrPROCEDURE As String = "UpdateTotals()"
+
+    On Error GoTo ErrorHandler
+
+    Me.TxtStn1Hrs.Value = Format([Stn1Total], "0.0")
+    Me.TxtStn2Hrs.Value = Format([Stn2Total], "0.0")
+    Me.TxtTotalHrs.Value = Format([AllStnTotal], "0.0")
+
+    UpdateTotals = True
+
+
+Exit Function
+
+ErrorExit:
+
+    '***CleanUpCode***
+    UpdateTotals = False
+
+Exit Function
+
+ErrorHandler:
+    If CentralErrorHandler(StrMODULE, StrPROCEDURE) Then
+        Stop
+        Resume
+    Else
+        Resume ErrorExit
+    End If
+End Function
