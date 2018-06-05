@@ -203,11 +203,23 @@ Private Sub BtnUpdateAA()
     Const StrPROCEDURE As String = "BtnUpdateAA()"
 
     On Error GoTo ErrorHandler
-
+    
 Restart:
 
     If Agreement Is Nothing Then Err.Raise SYSTEM_RESTART, , "Agreement Class is empty"
 
+    Select Case ValidateForm
+        
+        Case Is = FunctionalError
+            Err.Raise HANDLED_ERROR
+            
+        Case Is = ValidationError
+            Exit Sub
+                
+    End Select
+    
+    Response = MsgBox("Are you sure you want to update the changes to the Agreement?  Once saved, the changes cannot be undone!", vbExclamation + vbYesNo, APP_NAME)
+    
     If Response = 6 Then
         With Agreement
             .Update
@@ -611,6 +623,8 @@ Private Sub FillStnCells(Stn As Integer)
 
 Restart:
     
+    Application.ScreenUpdating = False
+    
     Set RngSel = Selection
     Debug.Print RngSel.Address
     
@@ -625,12 +639,17 @@ Restart:
     Next
     RngSel.Cells(1, 1).Select
     
+    If Not UpdateTotals Then Err.Raise HANDLED_ERROR
+    
 GracefulExit:
+
+    Application.ScreenUpdating = True
 
 Exit Sub
 
 ErrorExit:
-    
+
+    Application.ScreenUpdating = True
     Set RngSel = Nothing
     
 Exit Sub
@@ -658,11 +677,18 @@ Public Function UpdateTotals() As Boolean
     Const StrPROCEDURE As String = "UpdateTotals()"
 
     On Error GoTo ErrorHandler
+    Me.Unprotect
+    [NoWeeks] = CmoNoWeeks.ListIndex + 1
+    If PROTECT_ON Then Me.Protect
+    
+    Me.TxtStn1Hrs.Value = Format([Stn1Total] / 2 / [NoWeeks], "0.0")
+    Me.TxtStn2Hrs.Value = Format([Stn2Total] / 2 / [NoWeeks], "0.0")
+    Me.TxtTotalHrs.Value = Format([AllStnTotal] / 2 / [NoWeeks], "0.0")
 
-    Me.TxtStn1Hrs.Value = Format([Stn1Total], "0.0")
-    Me.TxtStn2Hrs.Value = Format([Stn2Total], "0.0")
-    Me.TxtTotalHrs.Value = Format([AllStnTotal], "0.0")
-
+    With CmoContract
+        If TxtTotalHrs < 120 Then .ListIndex = 0 Else .ListIndex = 1
+    End With
+    
     UpdateTotals = True
 
 
@@ -672,6 +698,88 @@ ErrorExit:
 
     '***CleanUpCode***
     UpdateTotals = False
+
+Exit Function
+
+ErrorHandler:
+    If CentralErrorHandler(StrMODULE, StrPROCEDURE) Then
+        Stop
+        Resume
+    Else
+        Resume ErrorExit
+    End If
+End Function
+
+' ===============================================================
+' ValidateForm
+' Validates input form before updating database
+' ---------------------------------------------------------------
+Private Function ValidateForm() As EnumFormValidation
+    Const StrPROCEDURE As String = "ValidateForm()"
+
+    On Error GoTo ErrorHandler
+
+    If CmoContract = -1 Then
+        ValidateForm = ValidationError
+        MsgBox "Please select a Contract", vbExclamation + vbOKOnly, APP_NAME
+        Exit Function
+    End If
+    
+    If CmoNoWeeks.ListIndex = -1 Then
+        ValidateForm = ValidationError
+        MsgBox "Please select the number of weeks for the Contract", vbExclamation + vbOKOnly, APP_NAME
+        Exit Function
+    End If
+
+    If CmoRole.ListIndex = -1 Then
+        ValidateForm = ValidationError
+        MsgBox "Please select a Role", vbExclamation + vbOKOnly, APP_NAME
+        Exit Function
+    End If
+
+    If CmoStation1.ListIndex = -1 Then
+        ValidateForm = ValidationError
+        MsgBox "Please select a primary Station", vbExclamation + vbOKOnly, APP_NAME
+        Exit Function
+    End If
+
+    If CmoStation2.ListIndex = -1 And TxtStn2Hrs <> 0 Then
+        ValidateForm = ValidationError
+        MsgBox "Please select a second Station", vbExclamation + vbOKOnly, APP_NAME
+        Exit Function
+    End If
+
+    If TxtCrewNo = -1 Then
+        ValidateForm = ValidationError
+        MsgBox "Please enter a Crew No", vbExclamation + vbOKOnly, APP_NAME
+        Exit Function
+    End If
+
+    If Not IsNumeric(TxtCrewNo) Then
+        ValidateForm = ValidationError
+        MsgBox "Please only use numerics for the Crew No", vbExclamation + vbOKOnly, APP_NAME
+        Exit Function
+    End If
+    
+    If Len(TxtCrewNo) > 4 Then
+        ValidateForm = ValidationError
+        MsgBox "Please enter a valid Crew No", vbExclamation + vbOKOnly, APP_NAME
+        Exit Function
+    End If
+    
+    If TxtName = "" Then
+        ValidateForm = ValidationError
+        MsgBox "Please enter a name", vbExclamation + vbOKOnly, APP_NAME
+        Exit Function
+    End If
+    
+    ValidateForm = FormOK
+
+Exit Function
+
+ErrorExit:
+
+    ValidateForm = FunctionalError
 
 Exit Function
 

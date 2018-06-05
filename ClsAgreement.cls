@@ -422,9 +422,11 @@ Public Sub CreateNew()
     
     pNoWeeks = Application.InputBox("How many weeks in the template cycle?", APP_NAME)
     
+    pAADate = Format(Now, "dd/mm/yy")
+    
     If Not ShtFrontPage.FormatWkRnge(pNoWeeks) Then Err.Raise HANDLED_ERROR
     
 '    Display
     DBSave
-    
+    Display
 End Sub
