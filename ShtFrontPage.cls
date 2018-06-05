@@ -678,16 +678,21 @@ Public Function UpdateTotals() As Boolean
 
     On Error GoTo ErrorHandler
     Me.Unprotect
-    [NoWeeks] = CmoNoWeeks.ListIndex + 1
-    If PROTECT_ON Then Me.Protect
     
-    Me.TxtStn1Hrs.Value = Format([Stn1Total] / 2 / [NoWeeks], "0.0")
-    Me.TxtStn2Hrs.Value = Format([Stn2Total] / 2 / [NoWeeks], "0.0")
-    Me.TxtTotalHrs.Value = Format([AllStnTotal] / 2 / [NoWeeks], "0.0")
-
-    With CmoContract
-        If TxtTotalHrs < 120 Then .ListIndex = 0 Else .ListIndex = 1
-    End With
+    If CmoNoWeeks.ListIndex <> -1 Then
+    
+        [NoWeeks] = CmoNoWeeks.ListIndex + 1
+        
+        If PROTECT_ON Then Me.Protect
+        
+        Me.TxtStn1Hrs.Value = Format([Stn1Total] / 2 / [NoWeeks], "0.0")
+        Me.TxtStn2Hrs.Value = Format([Stn2Total] / 2 / [NoWeeks], "0.0")
+        Me.TxtTotalHrs.Value = Format([AllStnTotal] / 2 / [NoWeeks], "0.0")
+    
+        With CmoContract
+            If TxtTotalHrs < 120 Then .ListIndex = 0 Else .ListIndex = 1
+        End With
+    End If
     
     UpdateTotals = True
 
