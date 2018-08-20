@@ -796,3 +796,48 @@ ErrorHandler:
         Resume ErrorExit
     End If
 End Function
+
+' ===============================================================
+' BtnAdmin
+' Displays User Admin Screen
+' ---------------------------------------------------------------
+Private Sub BtnAdmin()
+    Dim ErrNo As Integer
+
+    Const StrPROCEDURE As String = "BtnAdmin()"
+
+    On Error GoTo ErrorHandler
+
+Restart:
+
+    
+
+
+
+
+
+GracefulExit:
+
+
+Exit Sub
+
+ErrorExit:
+
+    '***CleanUpCode***
+
+Exit Sub
+
+ErrorHandler:
+    If Err.Number >= 1000 And Err.Number <= 1500 Then
+        ErrNo = Err.Number
+        CustomErrorHandler (Err.Number)
+        If ErrNo = SYSTEM_RESTART Then Resume Restart Else Resume GracefulExit
+    End If
+
+    If CentralErrorHandler(StrMODULE, StrPROCEDURE, , True) Then
+        Stop
+        Resume
+    Else
+        Resume ErrorExit
+    End If
+End Sub

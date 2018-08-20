@@ -1,0 +1,8 @@
+CrewNo,  dbText
+Forename,  dbText
+Surname,  dbText
+Username,  dbText
+RankGrade,  dbLong
+MailAlert,  dbBoolean
+Role,  dbLong
+AccessLvl,  dbDouble
