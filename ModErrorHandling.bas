@@ -114,8 +114,11 @@ Public Function CustomErrorHandler(ErrorCode As Long, Optional Message As String
             End If
             
         Case ACCESS_DENIED
-            MsgBox "Sorry you do not have the required Access Level.  " _
-                & "Please send a Support Mail if you require access", vbCritical, APP_NAME
+            MsgBox "Sorry, you do not have the required Access.  " _
+                & "Please contact SM Andy Dixon if you require access", vbCritical, APP_NAME
+            
+            Application.DisplayAlerts = False
+            Application.Quit
         
         Case NO_INI_FILE
             MsgBox "No INI file has been found, so system cannot continue. This can occur if the file " _

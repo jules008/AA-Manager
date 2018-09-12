@@ -252,7 +252,7 @@ Public Function GetTextLineNo(FileName As String) As Integer
         With wb.Worksheets(1)
         
             GetTextLineNo = .Cells(.Rows.Count, "A").End(xlUp).Row
-            wb.Close savechanges:=False
+            wb.Close SaveChanges:=False
         End With
     End If
     

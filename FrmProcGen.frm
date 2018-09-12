@@ -195,7 +195,7 @@ Private Sub BtnPaste_Click()
     If OptEntryPoint Then Txt = Txt & "End Sub"
     
     SetClipboard Txt
-	Hide
+        Hide
 End Sub
 
 Private Sub OptNonEntry_Click()

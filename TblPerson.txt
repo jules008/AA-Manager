@@ -5,4 +5,4 @@ Username,  dbText
 RankGrade,  dbLong
 MailAlert,  dbBoolean
 Role,  dbLong
-AccessLvl,  dbDouble
+MessageRead,  dbBoolean

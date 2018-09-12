@@ -24,8 +24,7 @@ Option Explicit
 
 Private Const StrMODULE As String = "FrmAdminUserList"
 
-Private Course As ClsCourse
-Private ActiveUserName As String
+Private ActiveUser As ClsPerson
 
 Public Function ShowForm() As Boolean
     
@@ -65,7 +64,7 @@ Private Sub BtnCourseAdmin_Click()
 
     On Error GoTo ErrorHandler
 
-    If Not FrmAdminCourseAccess.ShowForm Then Err.Raise HANDLED_ERROR
+    If Not FrmAdminUserList.ShowForm Then Err.Raise HANDLED_ERROR
 Exit Sub
 
 ErrorExit:
@@ -98,7 +97,7 @@ Private Sub BtnDelete_Click()
                             & UserName & " from the system? ", 36)
     
         If Response = 6 Then
-            If Not RemoveUser(UserName) Then Err.Raise HANDLED_ERROR
+            If Not ModSecurity.RemoveUser(UserName) Then Err.Raise HANDLED_ERROR
         End If
         If Not RefreshUserList Then Err.Raise HANDLED_ERROR
         If Not RefreshUserDetails Then Err.Raise HANDLED_ERROR
@@ -125,24 +124,10 @@ Private Sub BtnNew_Click()
 End Sub
 
 Private Sub BtnUpdate_Click()
+
     Const StrPROCEDURE As String = "BtnUpdate_Click()"
-    
-    Dim User As Supervisor
-    
-    On Error GoTo ErrorHandler
-
-    With User
-        .AccessLvl = 2
-        .Admin = ChkAdmin
-        .CrewNo = Trim(TxtCrewNo)
-        .Forename = Trim(TxtForeName)
-        .Rank = Trim(TxtRank)
-        .Role = ""
-        .Surname = Trim(TxtSurname)
-
-    End With
-    
-    If Not AddUpdateUser(User) Then Err.Raise HANDLED_ERROR
+       
+    If Not AddUpdateUser(ActiveUser) Then Err.Raise HANDLED_ERROR
     
     If Not RefreshUserList Then Err.Raise HANDLED_ERROR
     

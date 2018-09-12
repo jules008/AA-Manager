@@ -69,6 +69,7 @@ Public SYS_PATH As String
 ' Global Class Declarations
 ' ---------------------------------------------------------------
 Public MailSystem As ClsMailSystem
+Public CurrentUser As ClsPerson
 
 ' ---------------------------------------------------------------
 ' Others
@@ -97,16 +98,16 @@ Enum EnumContractType
     Over120hrs = 1
 End Enum
 
-Enum EnumRole
-    FireFighter = 0
-    CrewManager = 1
-    WatchManager = 2
-End Enum
-
 Enum EnumFormValidation
     FunctionalError = 0
     ValidationError = 1
     FormOK = 2
+End Enum
+
+Enum EnumRole
+    WCS = 0
+    FDS = 1
+    Admin = 2
 End Enum
 
 ' ===============================================================

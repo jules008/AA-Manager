@@ -279,7 +279,6 @@ Private Sub Worksheet_Change(ByVal Target As Range)
     On Error GoTo ErrorHandler
 
 Restart:
-    If Agreement Is Nothing Then Err.Raise SYSTEM_RESTART
     
     Select Case Target.Cells.Count
         
@@ -798,21 +797,22 @@ ErrorHandler:
 End Function
 
 ' ===============================================================
-' BtnAdmin
-' Displays User Admin Screen
+' BtnAdmin_Click
+' Enters User Management Screen
 ' ---------------------------------------------------------------
-Private Sub BtnAdmin()
+Private Sub BtnAdmin_Click()
     Dim ErrNo As Integer
 
-    Const StrPROCEDURE As String = "BtnAdmin()"
+    Const StrPROCEDURE As String = "BtnAdmin_Click()"
 
     On Error GoTo ErrorHandler
 
 Restart:
 
     
+    If CurrentUser Is Nothing Then Err.Raise SYSTEM_RESTART
 
-
+    
 
 
 
