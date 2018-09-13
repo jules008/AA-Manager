@@ -809,9 +809,9 @@ Private Sub BtnAdmin_Click()
 
 Restart:
 
-    
     If CurrentUser Is Nothing Then Err.Raise SYSTEM_RESTART
 
+    If Not FrmAdminUserList.ShowForm Then Err.Raise HANDLED_ERROR
     
 
 
