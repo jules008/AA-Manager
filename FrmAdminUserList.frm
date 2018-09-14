@@ -4,7 +4,7 @@ Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} FrmAdminUserList
    ClientHeight    =   6990
    ClientLeft      =   45
    ClientTop       =   375
-   ClientWidth     =   12540
+   ClientWidth     =   12150
    OleObjectBlob   =   "FrmAdminUserList.frx":0000
    StartUpPosition =   1  'CenterOwner
 End
@@ -23,8 +23,6 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Const StrMODULE As String = "FrmAdminUserList"
-
-Private ActiveUser As ClsPerson
 
 ' ===============================================================
 ' ShowForm
@@ -84,6 +82,8 @@ Private Sub BtnDelete_Click()
 
 Restart:
     
+    If CurrentUser Is Nothing Then Err.Raise SYSTEM_RESTART
+    
     SelUser = LstAccessList.ListIndex
     
     If SelUser <> -1 Then
@@ -95,7 +95,7 @@ Restart:
             If Not ModSecurity.RemoveUser(UserName) Then Err.Raise HANDLED_ERROR
         End If
         If Not RefreshUserList Then Err.Raise HANDLED_ERROR
-        If Not RefreshUserDetails Then Err.Raise HANDLED_ERROR
+        If Not PopulateForm Then Err.Raise HANDLED_ERROR
     End If
 
 
@@ -138,6 +138,8 @@ Private Sub BtnNew_Click()
 
 Restart:
 
+    If CurrentUser Is Nothing Then Err.Raise SYSTEM_RESTART
+    
     If Not ResetForm Then Err.Raise HANDLED_ERROR
 
 GracefulExit:
@@ -171,28 +173,57 @@ End Sub
 ' Updates changes to database
 ' ---------------------------------------------------------------
 Private Sub BtnUpdate_Click()
+    Dim User As ClsPerson
     Dim ErrNo As Integer
+    Dim StrStations As String
+    Dim i As Integer
+    Dim Cntrl As Control
+    Dim Stations(1 To 38) As String
 
     Const StrPROCEDURE As String = "BtnUpdate_Click()"
 
     On Error GoTo ErrorHandler
 
 Restart:
+    
+    Set User = New ClsPerson
+    
+    If CurrentUser Is Nothing Then Err.Raise SYSTEM_RESTART
 
-    If Not AddUpdateUser(ActiveUser) Then Err.Raise HANDLED_ERROR
+    For i = 1 To 38
+        Set Cntrl = Me.Controls("ChkStn" & i)
+        If Cntrl Then Stations(i) = 1 Else Stations(i) = 0
+    Next
+    
+    With User
+        .CrewNo = TxtCrewNo
+        .Forename = TxtForeName
+        .RankGrade = TxtRank
+        .Role = CmoRole.ListIndex
+        .Stations = Join(Stations, ";")
+        .Surname = TxtSurname
+        .UserName = TxtUserName
+    End With
+    
+    If Not AddUpdateUser(User) Then Err.Raise HANDLED_ERROR
     
     If Not RefreshUserList Then Err.Raise HANDLED_ERROR
     
     If ValidateData = True Then
     End If
 
+    
 GracefulExit:
 
+    Set User = Nothing
+    Set Cntrl = Nothing
 
 Exit Sub
 
 ErrorExit:
 
+    Set User = Nothing
+    Set Cntrl = Nothing
     '***CleanUpCode***
 
 Exit Sub
@@ -212,9 +243,7 @@ ErrorHandler:
     End If
 End Sub
 
-Private Sub Label36_Click()
 
-End Sub
 
 ' ===============================================================
 ' LstAccessList_Click
@@ -229,7 +258,7 @@ Private Sub LstAccessList_Click()
 
 Restart:
 
-    If Not RefreshUserDetails Then Err.Raise HANDLED_ERROR
+    If Not PopulateForm Then Err.Raise HANDLED_ERROR
 
 GracefulExit:
 
@@ -262,6 +291,8 @@ End Sub
 ' Initialisation routine when form starts up
 ' ---------------------------------------------------------------
 Private Function FormInitialise() As Boolean
+    Dim Roles(1 To 3, 1 To 2) As String
+    
     Const StrPROCEDURE As String = "FormInitialise()"
 
     On Error GoTo ErrorHandler
@@ -271,7 +302,19 @@ Private Function FormInitialise() As Boolean
         .AddItem
         .List(0, 0) = "Users"
     End With
-
+    
+    Roles(1, 1) = 0
+    Roles(1, 2) = "WCS"
+    Roles(2, 1) = 1
+    Roles(2, 2) = "FDS"
+    Roles(3, 1) = 2
+    Roles(3, 2) = "Admin"
+    
+    With CmoRole
+        .Clear
+        .List() = Roles
+    End With
+    
     FormInitialise = True
 
 
@@ -403,7 +446,7 @@ Private Function ResetForm() As Boolean
     TxtForeName = ""
     TxtRank = ""
     TxtSurname = ""
-    ChkAdmin = False
+    CmoRole = ""
     
     For i = 1 To 38
         Set ChkBox = Me.Controls("ChkStn" & i)
@@ -480,26 +523,25 @@ ErrorHandler:
 End Function
 
 ' ===============================================================
-' RefreshUserDetails
+' PopulateForm
 ' Refreshes user details on form
 ' ---------------------------------------------------------------
-Private Function RefreshUserDetails() As Boolean
+Private Function PopulateForm() As Boolean
     Dim ListSelection As Integer
     Dim UserName As String
+    Dim Stations() As String
     Dim RstUserDetails As Recordset
+    Dim Ctrl As Control
+    Dim i As Integer
     
-    Const StrPROCEDURE As String = "RefreshUserDetails()"
+    Const StrPROCEDURE As String = "PopulateForm()"
     
     On Error GoTo ErrorHandler
 
     ListSelection = LstAccessList.ListIndex
     
     If ListSelection = -1 Then
-        TxtCrewNo = ""
-        TxtForeName = ""
-        TxtRank = ""
-        TxtSurname = ""
-        ChkAdmin = False
+        If Not ResetForm Then Err.Raise HANDLED_ERROR
     Else
         UserName = LstAccessList.List(ListSelection, 0)
         Set RstUserDetails = GetUserDetails(UserName)
@@ -510,19 +552,30 @@ Private Function RefreshUserDetails() As Boolean
                 TxtForeName = !Forename
                 TxtRank = !RankGrade
                 TxtSurname = !Surname
-                If !Admin = True Then ChkAdmin = True Else ChkAdmin = False
+                CmoRole.ListIndex = !Role
+                TxtUserName = !UserName
+                Stations = Split(!Stations, ";")
             End With
+            
+            For i = 0 To 37
+                Set Ctrl = Me.Controls("ChkStn" & i + 1)
+                If Stations(i) = 1 Then Ctrl = True Else Ctrl = False
+            Next
         End If
     End If
+    
+    Set Ctrl = Nothing
     Set RstUserDetails = Nothing
-    RefreshUserDetails = True
+    PopulateForm = True
 
 Exit Function
 
 ErrorExit:
 
     '***CleanUpCode***
-    RefreshUserDetails = False
+    Set Ctrl = Nothing
+    Set RstUserDetails = Nothing
+    PopulateForm = False
 
 Exit Function
 

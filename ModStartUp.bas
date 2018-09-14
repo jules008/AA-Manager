@@ -299,6 +299,8 @@ Private Function LogUserOn(UserName As String) As Boolean
 
     On Error GoTo ErrorHandler
 
+    If UserName = "" Then Err.Raise HANDLED_ERROR, , "Username blank"
+    
     CurrentUser.DBGet UserName
     
     Debug.Print CurrentUser.UserName & " Logged on"

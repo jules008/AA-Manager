@@ -29,6 +29,7 @@ Private pSurname As String
 Private pUsername As String
 Private pRankGrade As String
 Private pMailAlert As Boolean
+Private pStations As String
 Private pRole As EnumRole
 Private pMessageRead As Boolean
 
@@ -104,6 +105,15 @@ Public Property Let MessageRead(ByVal vNewValue As Boolean)
     pMessageRead = vNewValue
 End Property
 
+'---------------------------------------------------------------
+Public Property Get Stations() As String
+   Stations = pStations
+End Property
+
+Public Property Let Stations(ByVal vNewValue As String)
+    pStations = vNewValue
+End Property
+
 ' ===============================================================
 ' Method DBGet
 ' Gets class from Database
@@ -127,6 +137,7 @@ Public Sub DBGet(UserNameOrCrewNo As String)
             If Not IsNull(!RankGrade) Then pRankGrade = !RankGrade
             If Not IsNull(!Role) Then pRole = !Role
             If Not IsNull(!MailAlert) Then pMailAlert = !MailAlert
+            If Not IsNull(!Stations) Then pStations = !Stations
             If Not IsNull(!MessageRead) Then pMessageRead = !MessageRead
             
         End If
@@ -157,6 +168,7 @@ Public Sub DBSave()
         If pSurname <> "" Then !Surname = pSurname
         If pUsername <> "" Then !UserName = pUsername Else !UserName = pForename & " " & pSurname
         If pRankGrade <> "" Then !RankGrade = pRankGrade
+        If pStations <> "" Then !Stations = pStations
         If pRole <> "" Then !Role = pRole
         !MailAlert = pMailAlert
         !MessageRead = pMessageRead

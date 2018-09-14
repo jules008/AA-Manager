@@ -2,7 +2,8 @@ CrewNo,  dbText
 Forename,  dbText
 Surname,  dbText
 Username,  dbText
-RankGrade,  dbLong
+RankGrade,  dbText
 MailAlert,  dbBoolean
 Role,  dbLong
 MessageRead,  dbBoolean
+Stations,  dbText
