@@ -29,7 +29,7 @@ Private pSurname As String
 Private pUsername As String
 Private pRankGrade As String
 Private pMailAlert As Boolean
-Private pRole As enumRole
+Private pRole As EnumRole
 Private pMessageRead As Boolean
 
 '---------------------------------------------------------------

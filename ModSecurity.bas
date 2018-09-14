@@ -200,27 +200,18 @@ End Function
 ' Returns access list for course
 ' ---------------------------------------------------------------
 Public Function GetAccessList() As Recordset
+    Dim RstUserList As Recordset
+    
     Const StrPROCEDURE As String = "GetAccessList()"
     
-    Dim StrUserName As String
-    Dim StrCourseNo As String
-    Dim CourseNo As String
-    Dim RstUserList As Recordset
-    Dim RstCourseUserLst As Recordset
-
     On Error GoTo ErrorHandler
     
-    If CourseNo = "" Then
-        Set RstUserList = ModDatabase.SQLQuery("userlist")
-    Else
-        StrCourseNo = "'" & CourseNo & "'"
-        
-        Set RstUserList = ModDatabase.SQLQuery("SELECT * FROM useraccess WHERE " & _
-                                " CourseNo = " & StrCourseNo)
-    End If
+    Set RstUserList = ModDatabase.SQLQuery("TblPerson")
     
-    If RstUserList.RecordCount <> 0 Then
+    If RstUserList.RecordCount > 0 Then
         Set GetAccessList = RstUserList
+    Else
+        Set GetAccessList = Nothing
     End If
     
     Set RstUserList = Nothing
@@ -304,18 +295,17 @@ End Function
 ' Returns user details in Recordset
 ' ---------------------------------------------------------------
 Public Function GetUserDetails(UserName As String) As Recordset
-    Dim StrUserName As String
     Dim RstUserList As Recordset
     
     On Error Resume Next
     
-    StrUserName = "'" & UserName & "'"
-    
-    Set RstUserList = ModDatabase.SQLQuery("SELECT * FROM userlist WHERE " & _
-                            " UserName = " & StrUserName)
+    Set RstUserList = ModDatabase.SQLQuery("SELECT * FROM TblPerson WHERE " & _
+                            " UserName = '" & UserName & "'")
                             
-    If RstUserList.RecordCount <> 0 Then
+    If RstUserList.RecordCount > 0 Then
         Set GetUserDetails = RstUserList
+    Else
+        Set GetUserDetails = Nothing
     End If
     
     Set RstUserList = Nothing
