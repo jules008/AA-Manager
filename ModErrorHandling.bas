@@ -117,9 +117,11 @@ Public Function CustomErrorHandler(ErrorCode As Long, Optional Message As String
             MsgBox "Sorry, you do not have the required Access.  " _
                 & "Please contact SM Andy Dixon if you require access", vbCritical, APP_NAME
             
-            Application.DisplayAlerts = False
-            Application.Quit
-        
+            If Not DEV_MODE Then
+                Application.DisplayAlerts = False
+                Application.Quit
+            End If
+            
         Case NO_INI_FILE
             MsgBox "No INI file has been found, so system cannot continue. This can occur if the file " _
                     & "is copied from its location on the T Drive.  Please delete file and create a shortcut instead", vbCritical, APP_NAME

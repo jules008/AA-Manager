@@ -19,8 +19,6 @@ Option Explicit
 
 Private Const StrMODULE As String = "ShtFrontPage"
 
-Private Agreement As ClsAgreement
-
 ' ===============================================================
 ' Initialise
 ' Initialises sheet
@@ -77,6 +75,12 @@ Public Function Initialise() As Boolean
         .AddItem "WM"
     End With
     
+    If CurrentUser.Role = admin Then
+        Me.Shapes("BtnAdmin").Visible = msoTrue
+    Else
+        Me.Shapes("BtnAdmin").Visible = msoFalse
+    End If
+
     Set RstStation = Nothing
     
     Initialise = True
@@ -106,16 +110,22 @@ End Function
 ' ---------------------------------------------------------------
 Private Sub BtnLoadAA()
     Dim SelectedPerson As TypeCrewMember
-    
+    Dim ErrNo As Integer
+
     Const StrPROCEDURE As String = "BtnLoadAA()"
 
     On Error GoTo ErrorHandler
 
+Restart:
+
     SelectedPerson = FrmPersonPicker.ShowForm
     
-    If Agreement Is Nothing Then Err.Raise SYSTEM_RESTART
+    If CurrentUser Is Nothing Then Err.Raise SYSTEM_RESTART
     
     If SelectedPerson.CrewNo <> "" Then
+        
+        Set Agreement = Nothing
+        Set Agreement = New ClsAgreement
         
         Application.ScreenUpdating = False
         
@@ -125,19 +135,25 @@ Private Sub BtnLoadAA()
             .Clear
             .Display
         End With
-        
-        Application.ScreenUpdating = True
-
     End If
+GracefulExit:
+
+
 Exit Sub
 
 ErrorExit:
 
-    Application.ScreenUpdating = True
+    '***CleanUpCode***
 
 Exit Sub
 
 ErrorHandler:
+    If Err.Number >= 1000 And Err.Number <= 1500 Then
+        ErrNo = Err.Number
+        CustomErrorHandler (Err.Number)
+        If ErrNo = SYSTEM_RESTART Then Resume Restart Else Resume GracefulExit
+    End If
+
     If CentralErrorHandler(StrMODULE, StrPROCEDURE, , True) Then
         Stop
         Resume
@@ -592,6 +608,49 @@ Private Sub BtnFillStn0()
 End Sub
 
 ' ===============================================================
+' BtnAdmin
+' Shows Admin Screen
+' ---------------------------------------------------------------
+Private Sub BtnAdmin()
+    Dim ErrNo As Integer
+
+    Const StrPROCEDURE As String = "ShowAdmin()"
+
+    On Error GoTo ErrorHandler
+
+Restart:
+
+    If CurrentUser Is Nothing Then Err.Raise SYSTEM_RESTART
+
+    If Not FrmAdminUserList.ShowForm Then Err.Raise HANDLED_ERROR
+    
+GracefulExit:
+
+
+Exit Sub
+
+ErrorExit:
+
+    '***CleanUpCode***
+
+Exit Sub
+
+ErrorHandler:
+    If Err.Number >= 1000 And Err.Number <= 1500 Then
+        ErrNo = Err.Number
+        CustomErrorHandler (Err.Number)
+        If ErrNo = SYSTEM_RESTART Then Resume Restart Else Resume GracefulExit
+    End If
+
+    If CentralErrorHandler(StrMODULE, StrPROCEDURE, , True) Then
+        Stop
+        Resume
+    Else
+        Resume ErrorExit
+    End If
+End Sub
+
+' ===============================================================
 ' BtnFillStn1
 ' Fills selected cells with 1
 ' ---------------------------------------------------------------
@@ -691,6 +750,10 @@ Public Function UpdateTotals() As Boolean
         With CmoContract
             If TxtTotalHrs < 120 Then .ListIndex = 0 Else .ListIndex = 1
         End With
+    Else
+        Me.TxtStn1Hrs.Value = Format(0, "0")
+        Me.TxtStn2Hrs.Value = Format(0, "0")
+        Me.TxtTotalHrs.Value = Format(0, "0")
     End If
     
     UpdateTotals = True
@@ -796,48 +859,3 @@ ErrorHandler:
     End If
 End Function
 
-' ===============================================================
-' BtnAdmin_Click
-' Enters User Management Screen
-' ---------------------------------------------------------------
-Private Sub BtnAdmin_Click()
-    Dim ErrNo As Integer
-
-    Const StrPROCEDURE As String = "BtnAdmin_Click()"
-
-    On Error GoTo ErrorHandler
-
-Restart:
-
-    If CurrentUser Is Nothing Then Err.Raise SYSTEM_RESTART
-
-    If Not FrmAdminUserList.ShowForm Then Err.Raise HANDLED_ERROR
-    
-
-
-
-GracefulExit:
-
-
-Exit Sub
-
-ErrorExit:
-
-    '***CleanUpCode***
-
-Exit Sub
-
-ErrorHandler:
-    If Err.Number >= 1000 And Err.Number <= 1500 Then
-        ErrNo = Err.Number
-        CustomErrorHandler (Err.Number)
-        If ErrNo = SYSTEM_RESTART Then Resume Restart Else Resume GracefulExit
-    End If
-
-    If CentralErrorHandler(StrMODULE, StrPROCEDURE, , True) Then
-        Stop
-        Resume
-    Else
-        Resume ErrorExit
-    End If
-End Sub

@@ -177,6 +177,7 @@ Private Sub BtnUpdate_Click()
     Dim ErrNo As Integer
     Dim StrStations As String
     Dim i As Integer
+    Dim Response As Integer
     Dim Cntrl As Control
     Dim Stations(1 To 38) As String
 
@@ -190,29 +191,31 @@ Restart:
     
     If CurrentUser Is Nothing Then Err.Raise SYSTEM_RESTART
 
-    For i = 1 To 38
-        Set Cntrl = Me.Controls("ChkStn" & i)
-        If Cntrl Then Stations(i) = 1 Else Stations(i) = 0
-    Next
-    
-    With User
-        .CrewNo = TxtCrewNo
-        .Forename = TxtForeName
-        .RankGrade = TxtRank
-        .Role = CmoRole.ListIndex
-        .Stations = Join(Stations, ";")
-        .Surname = TxtSurname
-        .UserName = TxtUserName
-    End With
-    
-    If Not AddUpdateUser(User) Then Err.Raise HANDLED_ERROR
-    
-    If Not RefreshUserList Then Err.Raise HANDLED_ERROR
-    
     If ValidateData = True Then
+    
+        For i = 1 To 38
+            Set Cntrl = Me.Controls("ChkStn" & i)
+            If Cntrl Then Stations(i) = 1 Else Stations(i) = 0
+        Next
+        
+        With User
+            .CrewNo = TxtCrewNo
+            .Forename = TxtForeName
+            .RankGrade = TxtRank
+            .Role = CmoRole.ListIndex
+            .Stations = Join(Stations, ";")
+            .Surname = TxtSurname
+            .UserName = TxtUserName
+        End With
+        
+        If Not AddUpdateUser(User) Then Err.Raise HANDLED_ERROR
+        
+        If Not RefreshUserList Then Err.Raise HANDLED_ERROR
+        
+        MsgBox "The record has been updated", vbOKOnly + vbInformation, APP_NAME
+
     End If
 
-    
 GracefulExit:
 
     Set User = Nothing
@@ -385,26 +388,20 @@ Private Function ValidateData() As Boolean
 
     On Error GoTo ErrorHandler
     
-    If Me.TxtCrewNo = "" Then
-        MsgBox "Please enter the User's Crew No"
-        ValidateData = False
-        Exit Function
-    End If
-    
     If Me.TxtForeName = "" Then
         MsgBox "Please enter the User's forename"
         ValidateData = False
         Exit Function
     End If
     
-    If Me.TxtRank = "" Then
-        MsgBox "Please enter the User's Rank"
+    If Me.TxtSurname = "" Then
+        MsgBox "Please enter the User's surname"
         ValidateData = False
         Exit Function
     End If
     
-    If Me.TxtSurname = "" Then
-        MsgBox "Please enter the User's surname"
+    If Me.CmoRole.ListIndex = -1 Then
+        MsgBox "Please select the User's role"
         ValidateData = False
         Exit Function
     End If

@@ -88,11 +88,11 @@ Public Property Let MailAlert(ByVal vNewValue As Boolean)
 End Property
 
 '---------------------------------------------------------------
-Public Property Get Role() As String
+Public Property Get Role() As EnumRole
     Role = pRole
 End Property
 
-Public Property Let Role(ByVal vNewValue As String)
+Public Property Let Role(ByVal vNewValue As EnumRole)
     pRole = vNewValue
 End Property
 

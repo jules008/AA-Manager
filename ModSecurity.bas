@@ -12,41 +12,43 @@ Option Explicit
 Private Const StrMODULE As String = "ModSecurity"
 
 ' ===============================================================
-' CourseAccessCheck
+' StationAccessCheck
 ' Returns whether person is on access list
 ' ---------------------------------------------------------------
-Public Function CourseAccessCheck(CourseNo As String) As Boolean
+Public Function StationAccessCheck(Station1 As Integer, Station2 As Integer) As EnumTriState
     Dim StrUserName As String
     Dim StrCourseNo As String
+    Dim Stations() As String
     Dim RstUserList As Recordset
     
-    Const StrPROCEDURE As String = "CourseAccessCheck()"
+    Const StrPROCEDURE As String = "StationAccessCheck()"
 
     On Error GoTo ErrorHandler
 
-    StrUserName = "'" & Application.UserName & "'"
-    StrCourseNo = "'" & CourseNo & "'"
+    Set RstUserList = ModDatabase.SQLQuery("SELECT Stations FROM TblPerson WHERE " & _
+                            " username = '" & CurrentUser.UserName & "'")
     
-    Set RstUserList = ModDatabase.SQLQuery("SELECT * FROM useraccess WHERE " & _
-                            " CourseNo = " & StrCourseNo & _
-                            " AND username = " & StrUserName)
+    StationAccessCheck = xFalse
     
-    If RstUserList.RecordCount = 0 Then
-        CourseAccessCheck = False
-    Else
-        CourseAccessCheck = True
-    End If
+    With RstUserList
+        If .RecordCount > 0 Then
+            Stations = Split(!Stations, ";")
+            If Stations(Station1 - 1) = 1 Then StationAccessCheck = xTrue
+            
+            If Station2 > 0 Then
+                If Stations(Station2 - 1) = 1 Then StationAccessCheck = xTrue
+            End If
+        End If
+    End With
     
     Set RstUserList = Nothing
-
-    CourseAccessCheck = True
 
 Exit Function
 
 ErrorExit:
 
     Set RstUserList = Nothing
-    CourseAccessCheck = False
+    StationAccessCheck = xError
 
 Exit Function
 

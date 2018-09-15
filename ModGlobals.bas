@@ -70,6 +70,7 @@ Public SYS_PATH As String
 ' ---------------------------------------------------------------
 Public MailSystem As ClsMailSystem
 Public CurrentUser As ClsPerson
+Public Agreement As ClsAgreement
 
 ' ---------------------------------------------------------------
 ' Others
@@ -108,6 +109,12 @@ Enum EnumRole
     WCS = 0
     FDS = 1
     Admin = 2
+End Enum
+
+Enum EnumTriState
+    xTrue = 0
+    xFalse = 1
+    xError = 2
 End Enum
 
 ' ===============================================================

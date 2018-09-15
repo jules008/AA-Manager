@@ -285,37 +285,47 @@ Public Sub Display()
     Dim i As Integer
     Dim x As Integer
     Dim w As Integer
+    Dim AccessGranted As EnumTriState
     
     On Error GoTo ErrorHandler
     
     Dim WeekArry(1 To 48, 1 To 7)
     
-    Set RngWeek1 = ShtFrontPage.Range(RNG_WEEK_1)
-       
-    With ShtFrontPage
-        .TxtCrewNo = pCrewMember.CrewNo
-        .TxtName = pCrewMember.Name
-        .CmoRole.ListIndex = pCrewMember.Role
-        If pAADate <> 0 Then .TxtTemplateDate = pAADate Else .TxtTemplateDate = ""
-        .CmoContract.ListIndex = pContractType
-        .CmoNoWeeks.ListIndex = pNoWeeks - 1
-        .CmoStation1.ListIndex = pStation1.StationNo - 1
-        .CmoStation2.ListIndex = pStation2.StationNo - 1
-        If pRevDateDue <> 0 Then .TxtReviewDate = pRevDateDue Else .TxtReviewDate = ""
-    End With
+    If CurrentUser Is Nothing Then Exit Sub
     
-    If Not ShtFrontPage.FormatWkRnge(pNoWeeks) Then Err.Raise HANDLED_ERROR
+    AccessGranted = ModSecurity.StationAccessCheck(pStation1.StationNo, pStation2.StationNo)
     
-    For w = 1 To pNoWeeks
-        For i = 1 To 7
-            For x = 1 To 48
-                WeekArry(x, i) = pTimeSlot(x, i + (w * 7) - 7)
-            Next
-        Next
-        RngWeek1.Offset((w * 9) - 9, 0) = Application.Transpose(WeekArry)
-    Next
+    If AccessGranted = xTrue Then
+        Set RngWeek1 = ShtFrontPage.Range(RNG_WEEK_1)
+           
+        With ShtFrontPage
+            .TxtCrewNo = pCrewMember.CrewNo
+            .TxtName = pCrewMember.Name
+            .CmoRole.ListIndex = pCrewMember.Role
+            If pAADate <> 0 Then .TxtTemplateDate = pAADate Else .TxtTemplateDate = ""
+            .CmoContract.ListIndex = pContractType
+            .CmoNoWeeks.ListIndex = pNoWeeks - 1
+            .CmoStation1.ListIndex = pStation1.StationNo - 1
+            .CmoStation2.ListIndex = pStation2.StationNo - 1
+            If pRevDateDue <> 0 Then .TxtReviewDate = pRevDateDue Else .TxtReviewDate = ""
+        End With
         
+        If Not ShtFrontPage.FormatWkRnge(pNoWeeks) Then Err.Raise HANDLED_ERROR
+        
+        For w = 1 To pNoWeeks
+            For i = 1 To 7
+                For x = 1 To 48
+                    WeekArry(x, i) = pTimeSlot(x, i + (w * 7) - 7)
+                Next
+            Next
+            RngWeek1.Offset((w * 9) - 9, 0) = Application.Transpose(WeekArry)
+        Next
+    Else
+        MsgBox "Sorry, you are not permitted to view Availability Agreements from this station.  Please see SM Andy Dixon for access", vbOKOnly + vbExclamation, APP_NAME
+    End If
+    
     If Not ShtFrontPage.UpdateTotals Then Err.Raise HANDLED_ERROR
+    
     Set RngWeek1 = Nothing
     
 Exit Sub
