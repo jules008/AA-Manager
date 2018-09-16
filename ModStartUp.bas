@@ -17,6 +17,7 @@ Private Const StrMODULE As String = "ModStartUp"
 ' ---------------------------------------------------------------
 Public Function Initialise() As Boolean
     Dim UserName As String
+    Dim Response As String
     
     Const StrPROCEDURE As String = "Initialise()"
 
@@ -41,8 +42,18 @@ Public Function Initialise() As Boolean
     Application.StatusBar = "Finding User....."
     
     If Not SetGlobalClasses Then Err.Raise HANDLED_ERROR
+
+    If DEV_MODE Then
+        Response = MsgBox("TEST USE ONLY - Do you want to log on as a test user?", vbYesNo + vbInformation, APP_NAME)
+        If Response = 6 Then
+            UserName = Application.InputBox("Please enter name of test user would like to log on with", APP_NAME)
+        Else
+            UserName = GetUserName
+        End If
+    Else
+        UserName = GetUserName
+    End If
     
-    UserName = GetUserName
     If UserName = "Error" Then Err.Raise HANDLED_ERROR
     
     If Not LogUserOn(UserName) Then Err.Raise HANDLED_ERROR

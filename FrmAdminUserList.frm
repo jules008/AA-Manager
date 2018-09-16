@@ -545,12 +545,12 @@ Private Function PopulateForm() As Boolean
         
         If Not RstUserDetails Is Nothing Then
             With RstUserDetails
-                TxtCrewNo = !CrewNo
-                TxtForeName = !Forename
-                TxtRank = !RankGrade
-                TxtSurname = !Surname
+                If Not IsNull(!CrewNo) Then TxtCrewNo = !CrewNo
+                If Not IsNull(!Forename) Then TxtForeName = !Forename
+                If Not IsNull(!RankGrade) Then TxtRank = !RankGrade
+                If Not IsNull(!Surname) Then TxtSurname = !Surname
                 CmoRole.ListIndex = !Role
-                TxtUserName = !UserName
+                If Not IsNull(!UserName) Then TxtUserName = !UserName
                 Stations = Split(!Stations, ";")
             End With
             

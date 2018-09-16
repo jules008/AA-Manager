@@ -74,11 +74,15 @@ Public Function Initialise() As Boolean
         .AddItem "CM"
         .AddItem "WM"
     End With
-    
+
     If CurrentUser.Role = admin Then
         Me.Shapes("BtnAdmin").Visible = msoTrue
     Else
-        Me.Shapes("BtnAdmin").Visible = msoFalse
+        If DEV_MODE Then
+            Me.Shapes("BtnAdmin").Visible = msoTrue
+        Else
+            Me.Shapes("BtnAdmin").Visible = msoFalse
+        End If
     End If
 
     Set RstStation = Nothing
