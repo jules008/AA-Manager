@@ -87,8 +87,8 @@ Public Const COLOUR_5 As Long = 5721863
 Public Const COLOUR_6 As Long = 0
 Public Const COLOUR_7 As Long = 16777215
 Public Const COLOUR_8 As Long = 5880731
-Public Const COLOUR_9 As Long = 0
-Public Const COLOUR_10 As Long = 0
+Public Const COLOUR_9 As Long = 49407
+Public Const COLOUR_10 As Long = 6712539
 Public Const COLOUR_11 As Long = 0
 
 ' ===============================================================

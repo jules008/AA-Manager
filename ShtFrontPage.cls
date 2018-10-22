@@ -25,6 +25,8 @@ Private Const StrMODULE As String = "ShtFrontPage"
 ' ---------------------------------------------------------------
 Public Function Initialise() As Boolean
     Dim RstStation As Recordset
+    Dim RevDaysLeft As Integer
+    
     Dim i As Integer
     
     Const StrPROCEDURE As String = "Initialise()"
@@ -34,6 +36,26 @@ Public Function Initialise() As Boolean
     Set RstStation = ModDBLookups.ReturnStnList
     Set Agreement = Nothing
     Set Agreement = New ClsAgreement
+    
+    With TxtRevDate
+        RevDaysLeft = DateDiff("d", Now, .Value)
+        
+        Debug.Print RevDaysLeft
+        
+        Select Case RevDaysLeft
+            Case Is > 14
+                .BackColor = COLOUR_1
+                .ForeColor = COLOUR_5
+                
+            Case Is > 0
+                .BackColor = COLOUR_9
+                .ForeColor = COLOUR_5
+            Case Is < 0
+                .BackColor = COLOUR_10
+                .ForeColor = COLOUR_5
+        End Select
+        
+    End With
     
     With RstStation
         CmoStation1.Clear
@@ -286,6 +308,14 @@ ErrorHandler:
     End If
 End Sub
 
+Private Sub TextBox5_Change()
+
+End Sub
+
+Private Sub TxtRevDate_Change()
+
+End Sub
+
 ' ===============================================================
 ' Worksheet_Change(ByVal Target As Range)
 ' Detects a change to the template and formats accordingly
@@ -372,14 +402,14 @@ Public Function Clear() As Boolean
     TxtCrewNo = ""
     TxtName = ""
     CmoNoWeeks = ""
-    TxtReviewDate = ""
+    TxtRevDate = ""
     TxtTemplateDate = ""
     CmoContract = ""
     CmoRole = ""
     CmoStation1 = ""
     CmoStation2 = ""
         
-    If Not ShtFrontPage.UpdateTotals Then Err.Raise HANDLED_ERROR
+    If Not ShtFrontPage.UpdateValues Then Err.Raise HANDLED_ERROR
 
     If PROTECT_ON Then Me.Protect
     
@@ -701,7 +731,7 @@ Restart:
     Next
     RngSel.Cells(1, 1).Select
     
-    If Not UpdateTotals Then Err.Raise HANDLED_ERROR
+    If Not UpdateValues Then Err.Raise HANDLED_ERROR
     
 GracefulExit:
 
@@ -732,11 +762,11 @@ ErrorHandler:
 End Sub
 
 ' ===============================================================
-' UpdateTotals
+' UpdateValues
 ' Updates the hrs/wk totals
 ' ---------------------------------------------------------------
-Public Function UpdateTotals() As Boolean
-    Const StrPROCEDURE As String = "UpdateTotals()"
+Public Function UpdateValues() As Boolean
+    Const StrPROCEDURE As String = "UpdateValues()"
 
     On Error GoTo ErrorHandler
     Me.Unprotect
@@ -760,7 +790,9 @@ Public Function UpdateTotals() As Boolean
         Me.TxtTotalHrs.Value = Format(0, "0")
     End If
     
-    UpdateTotals = True
+    Me.TxtRevDate = Format(Agreement.RevDateDue, "dd mmm yy")
+    
+    UpdateValues = True
 
 
 Exit Function
@@ -768,7 +800,7 @@ Exit Function
 ErrorExit:
 
     '***CleanUpCode***
-    UpdateTotals = False
+    UpdateValues = False
 
 Exit Function
 
@@ -863,3 +895,58 @@ ErrorHandler:
     End If
 End Function
 
+
+' ===============================================================
+' BtnApprove
+' Approves Agreement and extends date by 6 months
+' ---------------------------------------------------------------
+Private Sub BtnApprove()
+    Dim ErrNo As Integer
+    Dim Response As Integer
+    
+    Const StrPROCEDURE As String = "BtnApprove()"
+
+    On Error GoTo ErrorHandler
+
+Restart:
+
+    If Agreement Is Nothing Then Err.Raise SYSTEM_RESTART
+    
+    If Agreement.CrewMember.Name <> "" Then
+        Response = MsgBox("I have reviewed this Availability Agreement with " & Agreement.CrewMember.Name _
+                 & " and we agree that this agreement is achievable and realistic over the next six months", vbYesNo + vbExclamation, APP_NAME)
+                
+        If Response = 6 Then
+            Agreement.RevDateDue = DateAdd("d", 180, Now)
+            Agreement.DBSave
+            
+            If Not Me.UpdateValues Then Err.Raise HANDLED_ERROR
+            
+        End If
+    End If
+    
+GracefulExit:
+
+
+Exit Sub
+
+ErrorExit:
+
+    '***CleanUpCode***
+
+Exit Sub
+
+ErrorHandler:
+    If Err.Number >= 1000 And Err.Number <= 1500 Then
+        ErrNo = Err.Number
+        CustomErrorHandler (Err.Number)
+        If ErrNo = SYSTEM_RESTART Then Resume Restart Else Resume GracefulExit
+    End If
+
+    If CentralErrorHandler(StrMODULE, StrPROCEDURE, , True) Then
+        Stop
+        Resume
+    Else
+        Resume ErrorExit
+    End If
+End Sub

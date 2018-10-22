@@ -11,7 +11,7 @@ Attribute VB_Exposed = False
 ' Class ClsAgreement
 ' v0,0 - Initial Version
 '---------------------------------------------------------------
-' Date - 04 Jun 18
+' Date - 22 Oct 18
 '===============================================================
 ' Methods
 '---------------------------------------------------------------
@@ -307,7 +307,7 @@ Public Sub Display()
             .CmoNoWeeks.ListIndex = pNoWeeks - 1
             .CmoStation1.ListIndex = pStation1.StationNo - 1
             .CmoStation2.ListIndex = pStation2.StationNo - 1
-            If pRevDateDue <> 0 Then .TxtReviewDate = pRevDateDue Else .TxtReviewDate = ""
+            If pRevDateDue <> 0 Then .TxtRevDate = Format(pRevDateDue, "dd mmm yy") Else .TxtRevDate = ""
         End With
         
         If Not ShtFrontPage.FormatWkRnge(pNoWeeks) Then Err.Raise HANDLED_ERROR
@@ -324,7 +324,7 @@ Public Sub Display()
         MsgBox "Sorry, you are not permitted to view Availability Agreements from this station.  Please see SM Andy Dixon for access", vbOKOnly + vbExclamation, APP_NAME
     End If
     
-    If Not ShtFrontPage.UpdateTotals Then Err.Raise HANDLED_ERROR
+    If Not ShtFrontPage.UpdateValues Then Err.Raise HANDLED_ERROR
     
     Set RngWeek1 = Nothing
     
@@ -368,7 +368,7 @@ Public Sub Update()
         pHrsPW = 0
         pNoWeeks = .CmoNoWeeks.ListIndex + 1
         
-        If .TxtReviewDate <> "" Then pRevDateDue = .TxtReviewDate
+        If .TxtRevDate <> "" Then pRevDateDue = Format(.TxtRevDate, "dd mmm yy")
         
         If .CmoStation1.ListIndex <> -1 Then
             pStation1 = ModDBLookups.StationLookUp(StationNo:=.CmoStation1.ListIndex + 1)
