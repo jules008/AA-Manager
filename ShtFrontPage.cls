@@ -25,7 +25,6 @@ Private Const StrMODULE As String = "ShtFrontPage"
 ' ---------------------------------------------------------------
 Public Function Initialise() As Boolean
     Dim RstStation As Recordset
-    Dim RevDaysLeft As Integer
     
     Dim i As Integer
     
@@ -37,25 +36,7 @@ Public Function Initialise() As Boolean
     Set Agreement = Nothing
     Set Agreement = New ClsAgreement
     
-    With TxtRevDate
-        RevDaysLeft = DateDiff("d", Now, .Value)
-        
-        Debug.Print RevDaysLeft
-        
-        Select Case RevDaysLeft
-            Case Is > 14
-                .BackColor = COLOUR_1
-                .ForeColor = COLOUR_5
-                
-            Case Is > 0
-                .BackColor = COLOUR_9
-                .ForeColor = COLOUR_5
-            Case Is < 0
-                .BackColor = COLOUR_10
-                .ForeColor = COLOUR_5
-        End Select
-        
-    End With
+    If Not FormatRevDate Then Err.Raise HANDLED_ERROR
     
     With RstStation
         CmoStation1.Clear
@@ -97,7 +78,7 @@ Public Function Initialise() As Boolean
         .AddItem "WM"
     End With
 
-    If CurrentUser.Role = admin Then
+    If CurrentUser.Role = Admin Then
         Me.Shapes("BtnAdmin").Visible = msoTrue
     Else
         If DEV_MODE Then
@@ -118,6 +99,56 @@ ErrorExit:
     If PROTECT_ON Then Me.Protect
     Set RstStation = Nothing
     Initialise = False
+
+Exit Function
+
+ErrorHandler:
+    If CentralErrorHandler(StrMODULE, StrPROCEDURE) Then
+        Stop
+        Resume
+    Else
+        Resume ErrorExit
+    End If
+End Function
+
+' ===============================================================
+' FormatRevDate
+' Formats the review date dependant on the number of days left
+' ---------------------------------------------------------------
+Public Function FormatRevDate() As Boolean
+    Dim RevDaysLeft As Integer
+    
+    Const StrPROCEDURE As String = "FormatRevDate()"
+
+    On Error GoTo ErrorHandler
+    With TxtRevDate
+        If IsDate(TxtRevDate) Then
+            RevDaysLeft = DateDiff("d", Now, .Value)
+            
+            Select Case RevDaysLeft
+                Case Is > 14
+                    .BackColor = COLOUR_1
+                    .ForeColor = COLOUR_5
+                    
+                Case Is > 0
+                    .BackColor = COLOUR_9
+                    .ForeColor = COLOUR_5
+                Case Is < 0
+                    .BackColor = COLOUR_10
+                    .ForeColor = COLOUR_5
+            End Select
+        End If
+    End With
+
+    FormatRevDate = True
+
+
+Exit Function
+
+ErrorExit:
+
+    '***CleanUpCode***
+    FormatRevDate = False
 
 Exit Function
 
@@ -152,15 +183,14 @@ Restart:
         
         Set Agreement = Nothing
         Set Agreement = New ClsAgreement
-        
-        Application.ScreenUpdating = False
-        
+                
         With Agreement
             .CrewMember = SelectedPerson
             .DBGet
             .Clear
             .Display
         End With
+'        TxtRevDate.Visible = True
     End If
 GracefulExit:
 
@@ -392,17 +422,21 @@ Public Function Clear() As Boolean
     
     On Error GoTo ErrorHandler
     
+    Application.ScreenUpdating = False
+    
     Set RngWk1 = Range(RNG_WEEK_1)
        
     For i = 0 To 11
         Me.Unprotect
         RngWk1.Offset(i * 9, 0).ClearContents
     Next
+        
+    If Not ShtFrontPage.FormatWkRnge(1) Then Err.Raise HANDLED_ERROR
 
     TxtCrewNo = ""
     TxtName = ""
     CmoNoWeeks = ""
-    TxtRevDate = ""
+    TxtRevDate.Visible = False
     TxtTemplateDate = ""
     CmoContract = ""
     CmoRole = ""
@@ -414,13 +448,18 @@ Public Function Clear() As Boolean
     If PROTECT_ON Then Me.Protect
     
     Clear = True
-    
+
     Set RngWk1 = Nothing
+
+    Application.ScreenUpdating = True
+
 Exit Function
 
 ErrorExit:
+    
+    Application.ScreenUpdating = True
 
-    Me.Protect
+    If PROTECT_ON Then Me.Protect
     Clear = False
     
     Set RngWk1 = Nothing
@@ -791,6 +830,8 @@ Public Function UpdateValues() As Boolean
     End If
     
     Me.TxtRevDate = Format(Agreement.RevDateDue, "dd mmm yy")
+            
+    If Not Me.FormatRevDate Then Err.Raise HANDLED_ERROR
     
     UpdateValues = True
 
@@ -919,6 +960,8 @@ Restart:
         If Response = 6 Then
             Agreement.RevDateDue = DateAdd("d", 180, Now)
             Agreement.DBSave
+            
+            TxtRevDate.Visible = True
             
             If Not Me.UpdateValues Then Err.Raise HANDLED_ERROR
             

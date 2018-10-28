@@ -55,6 +55,7 @@ Private Function CloseDown() As Boolean
     On Error GoTo ErrorHandler
 
     If Not ModCloseDown.Terminate Then Err.Raise HANDLED_ERROR
+    If Not ShtFrontPage.Clear Then Err.Raise HANDLED_ERROR
 
     CloseDown = True
 
@@ -85,6 +86,7 @@ Private Sub Workbook_Open()
 
     On Error GoTo ErrorHandler
     If Not ModStartUp.Initialise Then Err.Raise HANDLED_ERROR
+    If Not ShtFrontPage.Clear Then Err.Raise HANDLED_ERROR
 Exit Sub
 
 ErrorExit:

@@ -288,7 +288,9 @@ Public Sub Display()
     Dim AccessGranted As EnumTriState
     
     On Error GoTo ErrorHandler
-    
+
+    Application.ScreenUpdating = False
+
     Dim WeekArry(1 To 48, 1 To 7)
     
     If CurrentUser Is Nothing Then Exit Sub
@@ -307,7 +309,16 @@ Public Sub Display()
             .CmoNoWeeks.ListIndex = pNoWeeks - 1
             .CmoStation1.ListIndex = pStation1.StationNo - 1
             .CmoStation2.ListIndex = pStation2.StationNo - 1
-            If pRevDateDue <> 0 Then .TxtRevDate = Format(pRevDateDue, "dd mmm yy") Else .TxtRevDate = ""
+            
+            If pRevDateDue <> 0 Then
+                .TxtRevDate.Visible = True
+                .TxtRevDate = Format(pRevDateDue, "dd mmm yy")
+                If Not .FormatRevDate Then Err.Raise HANDLED_ERROR
+
+            Else
+                .TxtRevDate.Visible = False
+                .TxtRevDate = ""
+            End If
         End With
         
         If Not ShtFrontPage.FormatWkRnge(pNoWeeks) Then Err.Raise HANDLED_ERROR
@@ -328,9 +339,13 @@ Public Sub Display()
     
     Set RngWeek1 = Nothing
     
+    Application.ScreenUpdating = True
+
 Exit Sub
 
 ErrorHandler:
+    
+    Application.ScreenUpdating = True
 
     Set RngWeek1 = Nothing
 End Sub
