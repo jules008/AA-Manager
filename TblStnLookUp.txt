@@ -1,6 +1,0 @@
-StationNo,  dbLong
-Callsign,  dbText
-Name,  dbText
-Address,  dbText
-StationType,  dbText
-Division,  dbText

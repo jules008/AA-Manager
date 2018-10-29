@@ -1,8 +1,0 @@
-CrewNo,  dbText
-Role,  dbLong
-CrewName,  dbText
-TemplateDate,  dbText
-ContractType,  dbDouble
-HrsPW,  dbDouble
-NoWeeks,  dbDouble
-RevDateDue,  dbDate

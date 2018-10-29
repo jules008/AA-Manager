@@ -209,68 +209,63 @@ Public Sub UpdateDBScript()
     Dim Fld As DAO.Field
     
     DBConnect
-        
+    
+    Set DB = OpenDatabase("\\lincsfire.lincolnshire.gov.uk\folderredir$\Documents\julian.turner\Documents\RDS Project\AA Manager\Dev Environment\System Files\Rappel Data Pre-Live v0,04.accdb")
+
+    DB.Execute "CREATE TABLE TblDBVersion"
+    DB.Execute "ALTER TABLE TblDBVersion ADD Version Text"
+    
+    Set RstTable = SQLQuery("TblDBVersion")
+
+    With RstTable
+        .AddNew
+        .Fields(0) = "V0.0.0"
+        .Update
+    End With
+    
     Set RstTable = SQLQuery("TblDBVersion")
     
     'check preceding DB Version
-    If RstTable.Fields(0) <> "v1,393" Then
-        MsgBox "Database needs to be upgraded to v1,393 to continue", vbOKOnly + vbCritical
+    If RstTable!VERSION <> "V0.0.0" Then
+        MsgBox "Database needs to be upgraded to V0.0.0 to continue", vbOKOnly + vbCritical
         Exit Sub
     End If
     
-    MsgBox "Import tables TblVehicle and TblVehicleType"
-    
     'Table changes
+    DB.Execute "CREATE TABLE TblContractLookup"
+    DB.Execute "ALTER TABLE TblContractLookup ADD ContractNo Long"
+    DB.Execute "ALTER TABLE TblContractLookup ADD ContractType Text"
     
-    ' delete old vehicle table and add new
-    DB.Execute "SELECT * INTO TblVehicleOLD FROM TblVehicle"
-    DB.Execute "DROP TABLE TblVehicle"
-    DB.Execute "SELECT * INTO TblVehicle FROM TblVehicleNEW"
-    DB.Execute "DROP TABLE TblVehicleNEW"
+    'Table CrewMemberDetail
+    DB.Execute "SELECT * INTO TblCrewMemberDetail FROM CrewMemberDetail"
+    DB.Execute "DROP TABLE CrewMemberDetail"
     
-    ' delete old vehicleType table and add new
-    DB.Execute "SELECT * INTO TblVehicleTypeOLD FROM TblVehicleType"
-    DB.Execute "DROP TABLE TblVehicleType"
-    DB.Execute "SELECT * INTO TblVehicleType FROM TblVehicleTypeNEW"
-    DB.Execute "DROP TABLE TblVehicleTypeNEW"
+    'Table CrewMember
+    DB.Execute "SELECT * INTO TblCrewMember FROM CrewMember"
+    DB.Execute "DROP TABLE CrewMember"
     
-    'clear new issue flag
-    
-    DB.Execute "SELECT * INTO TblAssetOLD FROM TblAsset"
-    Set RstTable = SQLQuery("TblAsset")
-    
-    i = 1
-    With RstTable
-        Do While Not .EOF
-            Debug.Print !AssetNo
-            Binary = !AllowedOrderReasons
-            
-            If Len(Binary) <> 13 Then
-                Binary = Left(Binary, 13)
-                Debug.Print "Length corrected on Asset " & !AssetNo
-            End If
-            
-            Binary = Left(Binary, 12) & "0"
-            
-            .Edit
-            !AllowedOrderReasons = Binary
-            .Update
-            .MoveNext
-            i = i + 1
-        Loop
-    
-    End With
+    'Table TblPerson
+    DB.Execute "CREATE TABLE TblPerson"
+    DB.Execute "ALTER TABLE TblPerson ADD CrewNo Text"
+    DB.Execute "ALTER TABLE TblPerson ADD Forename Text"
+    DB.Execute "ALTER TABLE TblPerson ADD Surname Text"
+    DB.Execute "ALTER TABLE TblPerson ADD UserName Text"
+    DB.Execute "ALTER TABLE TblPerson ADD RankGrade Text"
+    DB.Execute "ALTER TABLE TblPerson ADD MailAlert yesno"
+    DB.Execute "ALTER TABLE TblPerson ADD Role Long"
+    DB.Execute "ALTER TABLE TblPerson ADD MessageRead YesNo"
+    DB.Execute "ALTER TABLE TblPerson ADD Stations Text"
     
     'update DB Version
     Set RstTable = SQLQuery("TblDBVersion")
     
     With RstTable
         .Edit
-        .Fields(0) = "v1,394"
+        .Fields(0) = "V0.0.1"
         .Update
     End With
     
-    UpdateSysMsg
+'    UpdateSysMsg
     
     MsgBox "Database successfully updated", vbOKOnly + vbInformation
     
@@ -292,38 +287,38 @@ Public Sub UpdateDBScriptUndo()
         
     Dim Fld As DAO.Field
         
-    DBConnect
+    Set DB = OpenDatabase("\\lincsfire.lincolnshire.gov.uk\folderredir$\Documents\julian.turner\Documents\RDS Project\AA Manager\Dev Environment\System Files\Rappel Data Pre-Live v0,04.accdb")
     
     Set RstTable = SQLQuery("TblDBVersion")
 
-    If RstTable.Fields(0) <> "v1,394" Then
-        MsgBox "Database needs to be upgraded to v1,394 to continue", vbOKOnly + vbCritical
+    If RstTable.Fields(0) <> "V0.0.1" Then
+        MsgBox "Database needs to be upgraded to V0.0.1 to continue", vbOKOnly + vbCritical
         Exit Sub
     End If
        
-    'Undo Vehicle update
-    DB.Execute "SELECT * INTO TblVehicleNEW FROM TblVehicle"
-    DB.Execute "DROP TABLE TblVehicle"
-    DB.Execute "SELECT * INTO TblVehicle FROM TblVehicleOLD"
-    DB.Execute "DROP TABLE TblVehicleOLD"
-    
-    DB.Execute "SELECT * INTO TblVehicleTypeNEW FROM TblVehicleType"
-    DB.Execute "DROP TABLE TblVehicleType"
-    DB.Execute "SELECT * INTO TblVehicleType FROM TblVehicleTypeOLD"
-    DB.Execute "DROP TABLE TblVehicleTypeOLD"
      
     Set RstTable = SQLQuery("TblDBVersion")
 
-    'undo new issue update
-    DB.Execute "DROP TABLE TblAsset"
-    DB.Execute "SELECT * INTO TblAsset FROM TblAssetOLD"
-    DB.Execute "DROP TABLE TblAssetOLD"
-    
     With RstTable
         .Edit
-        .Fields(0) = "v1,393"
+        .Fields(0) = "V0.0.0"
         .Update
     End With
+    
+    Set RstTable = Nothing
+    
+    'Drop Table
+    DB.Execute "DROP TABLE tblDBVersion"
+    DB.Execute "DROP TABLE TblContractLookup"
+    DB.Execute "DROP TABLE TblPerson"
+    
+    'Table CrewMemberDetail
+    DB.Execute "SELECT * INTO CrewMemberDetail FROM TblCrewMemberDetail"
+    DB.Execute "DROP TABLE TblCrewMemberDetail"
+    
+    'Table CrewMember
+    DB.Execute "SELECT * INTO CrewMember FROM TblCrewMember"
+    DB.Execute "DROP TABLE TblCrewMember"
     
     MsgBox "Database reset successfully", vbOKOnly + vbInformation
     

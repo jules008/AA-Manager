@@ -15,9 +15,9 @@ Option Explicit
 ' ---------------------------------------------------------------
 Public Const PROJECT_FILE_NAME As String = "RDS Agreement Manager"
 Public Const APP_NAME As String = "RDS Agreement Manager"
-Public Const EXPORT_FILE_PATH As String = "\\lincsfire.lincolnshire.gov.uk\folderredir$\Documents\julian.turner\Documents\RDS Project\AA Manager\Library\Dev\"
-Public Const IMPORT_FILE_PATH As String = "\\lincsfire.lincolnshire.gov.uk\folderredir$\Documents\julian.turner\Documents\RDS Project\AA Manager\Library\Dev\"
-Public Const LIBRARY_FILE_PATH As String = "\\lincsfire.lincolnshire.gov.uk\folderredir$\Documents\julian.turner\Documents\RDS Project\AA Manager\Library\"
+Public Const EXPORT_FILE_PATH As String = "\\lincsfire.lincolnshire.gov.uk\folderredir$\Documents\julian.turner\Documents\RDS Project\AA Manager\Dev Environment\Library\"
+Public Const IMPORT_FILE_PATH As String = "\\lincsfire.lincolnshire.gov.uk\folderredir$\Documents\julian.turner\Documents\RDS Project\AA Manager\Dev Environment\Library\"
+Public Const LIBRARY_FILE_PATH As String = "\\lincsfire.lincolnshire.gov.uk\folderredir$\Documents\julian.turner\Documents\RDS Project\AA Manager\Dev Environment\Library\"
 Public Const DB_FILE_NAME As String = "Rappel Data Pre-Live v0,04.accdb"
 Public Const INI_FILE_PATH As String = "\System Files\"
 Public Const INI_FILE_NAME As String = "System.ini"
@@ -32,7 +32,7 @@ Public Const RNG_TIME_1 As String = "C3:AX3"
 Public Const RNG_DAY_1 As String = "B4:B10"
 Public Const RNG_WKNO_1 As String = "B3"
 Public Const VERSION = "V0.0.0"
-Public Const DB_VER = "V0.0.0"
+Public Const DB_VER = "V0.0.1"
 Public Const VER_DATE = ""
 
 ' ===============================================================
