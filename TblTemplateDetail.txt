@@ -2,4 +2,4 @@ CrewNo,  dbText
 Day,  dbDouble
 WeekDay,  dbDouble
 TimeSlot,  dbDouble
-OnCall,  dbBoolean
+OnCall,  dbDouble
