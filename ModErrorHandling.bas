@@ -62,7 +62,7 @@ Public Function CentralErrorHandler( _
         ErrMsg = vbNullString
     End If
     
-    CentralErrorHandler = DEBUG_MODE
+    CentralErrorHandler = DEV_MODE
     
     ModLibrary.PerfSettingsOff
 End Function

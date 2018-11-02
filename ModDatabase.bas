@@ -32,7 +32,7 @@ Restart:
         Err.Raise NO_DATABASE_FOUND, Description:="Unable to connect to database"
     Else
         If FaultCount1008 > 0 Then FaultCount1008 = 0
-    
+        Debug.Print SQL
         Set RstResults = DB.OpenRecordset(SQL, dbOpenDynaset)
         Set SQLQuery = RstResults
     End If
@@ -76,7 +76,7 @@ Public Function DBConnect() As Boolean
     Const StrPROCEDURE As String = "DBConnect()"
 
     On Error GoTo ErrorHandler
-
+    
     Set DB = OpenDatabase(DB_PATH & DB_FILE_NAME)
   
     DBConnect = True
@@ -210,8 +210,6 @@ Public Sub UpdateDBScript()
     
     DBConnect
     
-    Set DB = OpenDatabase("\\lincsfire.lincolnshire.gov.uk\folderredir$\Documents\julian.turner\Documents\RDS Project\AA Manager\Dev Environment\System Files\Rappel Data Pre-Live v0,04.accdb")
-
     DB.Execute "CREATE TABLE TblDBVersion"
     DB.Execute "ALTER TABLE TblDBVersion ADD Version Text"
     
@@ -244,7 +242,14 @@ Public Sub UpdateDBScript()
     DB.Execute "ALTER TABLE TblStnLookUp ADD Address Text"
     DB.Execute "ALTER TABLE TblStnLookUp ADD StationType Text"
     DB.Execute "ALTER TABLE TblStnLookUp ADD Division Text"
-        
+     
+    'Table TblTemplateStns
+    DB.Execute "CREATE TABLE TblTemplateStns"
+    DB.Execute "ALTER TABLE TblTemplateStns ADD CrewNo Text"
+    DB.Execute "ALTER TABLE TblTemplateStns ADD Station Double"
+    DB.Execute "ALTER TABLE TblTemplateStns ADD StationNo Long"
+    DB.Execute "ALTER TABLE TblTemplateStns ADD HrsPW Double"
+       
     'Table CrewMemberDetail
     DB.Execute "SELECT * INTO TblCrewMemberDetail FROM CrewMemberDetail"
     DB.Execute "DROP TABLE CrewMemberDetail"
@@ -327,7 +332,7 @@ Public Sub UpdateDBScriptUndo()
         
     Dim Fld As DAO.Field
         
-    Set DB = OpenDatabase("\\lincsfire.lincolnshire.gov.uk\folderredir$\Documents\julian.turner\Documents\RDS Project\AA Manager\Dev Environment\System Files\Rappel Data Pre-Live v0,04.accdb")
+    DBConnect
     
     Set RstTable = SQLQuery("TblDBVersion")
 
@@ -352,6 +357,7 @@ Public Sub UpdateDBScriptUndo()
     DB.Execute "DROP TABLE TblContractLookup"
     DB.Execute "DROP TABLE TblPerson"
     DB.Execute "DROP TABLE TblStnLookUp"
+    DB.Execute "DROP TABLE TblTemplateStns"
     
     'Table CrewMemberDetail
     DB.Execute "SELECT * INTO CrewMemberDetail FROM TblCrewMemberDetail"

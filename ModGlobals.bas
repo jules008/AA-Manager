@@ -18,7 +18,6 @@ Public Const APP_NAME As String = "RDS Agreement Manager"
 Public Const EXPORT_FILE_PATH As String = "\\lincsfire.lincolnshire.gov.uk\folderredir$\Documents\julian.turner\Documents\RDS Project\AA Manager\Dev Environment\Library\"
 Public Const IMPORT_FILE_PATH As String = "\\lincsfire.lincolnshire.gov.uk\folderredir$\Documents\julian.turner\Documents\RDS Project\AA Manager\Dev Environment\Library\"
 Public Const LIBRARY_FILE_PATH As String = "\\lincsfire.lincolnshire.gov.uk\folderredir$\Documents\julian.turner\Documents\RDS Project\AA Manager\Dev Environment\Library\"
-Public Const DB_FILE_NAME As String = "Rappel Data Pre-Live v0,04.accdb"
 Public Const INI_FILE_PATH As String = "\System Files\"
 Public Const INI_FILE_NAME As String = "System.ini"
 Public Const PROTECT_ON As Boolean = True
@@ -64,6 +63,7 @@ Public ENABLE_PRINT As Boolean
 Public DB_PATH As String
 Public DEV_MODE As Boolean
 Public SYS_PATH As String
+Public DB_FILE_NAME As String
 
 ' ===============================================================
 ' Global Class Declarations
