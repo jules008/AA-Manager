@@ -239,7 +239,7 @@ Public Sub UpdateDBScript()
     'Table TblStnLookUp
     DB.Execute "CREATE TABLE TblStnLookUp"
     DB.Execute "ALTER TABLE TblStnLookUp ADD StationNo Long"
-    DB.Execute "ALTER TABLE TblStnLookUp ADD CallSign Text"
+    DB.Execute "ALTER TABLE TblStnLookUp ADD Callsign Text"
     DB.Execute "ALTER TABLE TblStnLookUp ADD Name Text"
     DB.Execute "ALTER TABLE TblStnLookUp ADD Address Text"
     DB.Execute "ALTER TABLE TblStnLookUp ADD StationType Text"
@@ -263,10 +263,13 @@ Public Sub UpdateDBScript()
     
     'Table Template
     DB.Execute "SELECT * INTO TblTemplate FROM Template"
+    DB.Execute "SELECT * INTO TblTemplateBAK FROM Template"
     DB.Execute "DROP TABLE Template"
+    
     
     'Table TemplateDetail
     DB.Execute "SELECT * INTO TblTemplateDetail FROM TemplateDetail"
+    DB.Execute "SELECT * INTO TblTemplateDetailBAK FROM TemplateDetail"
     DB.Execute "DROP TABLE TemplateDetail"
     
     'Table TimeTbl
@@ -278,7 +281,7 @@ Public Sub UpdateDBScript()
     DB.Execute "ALTER TABLE TblPerson ADD CrewNo Text"
     DB.Execute "ALTER TABLE TblPerson ADD Forename Text"
     DB.Execute "ALTER TABLE TblPerson ADD Surname Text"
-    DB.Execute "ALTER TABLE TblPerson ADD UserName Text"
+    DB.Execute "ALTER TABLE TblPerson ADD Username Text"
     DB.Execute "ALTER TABLE TblPerson ADD RankGrade Text"
     DB.Execute "ALTER TABLE TblPerson ADD MailAlert yesno"
     DB.Execute "ALTER TABLE TblPerson ADD Role Long"
@@ -363,12 +366,14 @@ Public Sub UpdateDBScriptUndo()
     DB.Execute "DROP TABLE TblStationDetail"
     
      'Table Template
-    DB.Execute "SELECT * INTO Template FROM TblTemplate"
+    DB.Execute "SELECT * INTO Template FROM TblTemplateBAK"
     DB.Execute "DROP TABLE TblTemplate"
+    DB.Execute "DROP TABLE TblTemplateBAK"
     
      'Table TemplateDetail
-    DB.Execute "SELECT * INTO TemplateDetail FROM TblTemplateDetail"
+    DB.Execute "SELECT * INTO TemplateDetail FROM TblTemplateDetailBAK"
     DB.Execute "DROP TABLE TblTemplateDetail"
+    DB.Execute "DROP TABLE TblTemplateDetailBAK"
     
      'Table TimeTbl
     DB.Execute "SELECT * INTO TimeTbl FROM TblTimeTbl"

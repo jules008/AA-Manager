@@ -1,7 +1,7 @@
 CrewNo,  dbText
 Forename,  dbText
 Surname,  dbText
-UserName,  dbText
+Username,  dbText
 RankGrade,  dbText
 MailAlert,  dbBoolean
 Role,  dbLong
