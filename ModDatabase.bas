@@ -265,12 +265,14 @@ Public Sub UpdateDBScript()
     DB.Execute "SELECT * INTO TblTemplate FROM Template"
     DB.Execute "SELECT * INTO TblTemplateBAK FROM Template"
     DB.Execute "DROP TABLE Template"
-    
+    DB.Execute "ALTER TABLE TblTemplate DROP ID, NoStation, StationNo, StationName"
+    DB.Execute "ALTER TABLE TblTemplate ADD ContractType Double, HrsPW Double, NoWeeks Double, RevDateDue Date"
     
     'Table TemplateDetail
     DB.Execute "SELECT * INTO TblTemplateDetail FROM TemplateDetail"
     DB.Execute "SELECT * INTO TblTemplateDetailBAK FROM TemplateDetail"
     DB.Execute "DROP TABLE TemplateDetail"
+    DB.Execute "ALTER TABLE TblTemplateDetail DROP ID1, StationNo, ClosedDate"
     
     'Table TimeTbl
     DB.Execute "SELECT * INTO TblTimeTbl FROM TimeTbl"
