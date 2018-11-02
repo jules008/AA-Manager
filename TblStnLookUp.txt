@@ -1,0 +1,6 @@
+StationNo,  dbLong
+CallSign,  dbText
+Name,  dbText
+Address,  dbText
+StationType,  dbText
+Division,  dbText

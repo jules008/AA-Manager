@@ -231,11 +231,20 @@ Public Sub UpdateDBScript()
         Exit Sub
     End If
     
-    'Table changes
+    'Table TblContractLookup
     DB.Execute "CREATE TABLE TblContractLookup"
     DB.Execute "ALTER TABLE TblContractLookup ADD ContractNo Long"
     DB.Execute "ALTER TABLE TblContractLookup ADD ContractType Text"
     
+    'Table TblStnLookUp
+    DB.Execute "CREATE TABLE TblStnLookUp"
+    DB.Execute "ALTER TABLE TblStnLookUp ADD StationNo Long"
+    DB.Execute "ALTER TABLE TblStnLookUp ADD CallSign Text"
+    DB.Execute "ALTER TABLE TblStnLookUp ADD Name Text"
+    DB.Execute "ALTER TABLE TblStnLookUp ADD Address Text"
+    DB.Execute "ALTER TABLE TblStnLookUp ADD StationType Text"
+    DB.Execute "ALTER TABLE TblStnLookUp ADD Division Text"
+        
     'Table CrewMemberDetail
     DB.Execute "SELECT * INTO TblCrewMemberDetail FROM CrewMemberDetail"
     DB.Execute "DROP TABLE CrewMemberDetail"
@@ -243,6 +252,26 @@ Public Sub UpdateDBScript()
     'Table CrewMember
     DB.Execute "SELECT * INTO TblCrewMember FROM CrewMember"
     DB.Execute "DROP TABLE CrewMember"
+    
+    'Table Station
+    DB.Execute "SELECT * INTO TblStation FROM Station"
+    DB.Execute "DROP TABLE Station"
+    
+    'Table StationDetail
+    DB.Execute "SELECT * INTO TblStationDetail FROM StationDetail"
+    DB.Execute "DROP TABLE StationDetail"
+    
+    'Table Template
+    DB.Execute "SELECT * INTO TblTemplate FROM Template"
+    DB.Execute "DROP TABLE Template"
+    
+    'Table TemplateDetail
+    DB.Execute "SELECT * INTO TblTemplateDetail FROM TemplateDetail"
+    DB.Execute "DROP TABLE TemplateDetail"
+    
+    'Table TimeTbl
+    DB.Execute "SELECT * INTO TblTimeTbl FROM TimeTbl"
+    DB.Execute "DROP TABLE TimeTbl"
     
     'Table TblPerson
     DB.Execute "CREATE TABLE TblPerson"
@@ -255,6 +284,10 @@ Public Sub UpdateDBScript()
     DB.Execute "ALTER TABLE TblPerson ADD Role Long"
     DB.Execute "ALTER TABLE TblPerson ADD MessageRead YesNo"
     DB.Execute "ALTER TABLE TblPerson ADD Stations Text"
+
+
+    DB.Execute "INSERT INTO TblPerson (Crewno,Forename,Surname,UserName,RankGrade,MailAlert, Role,MessageRead,Stations )" _
+                    & " VALUES ('5398', 'Julian', 'Turner', 'Julian Turner', 'Admin', TRUE, 2, TRUE, 1)"
     
     'update DB Version
     Set RstTable = SQLQuery("TblDBVersion")
@@ -311,6 +344,7 @@ Public Sub UpdateDBScriptUndo()
     DB.Execute "DROP TABLE tblDBVersion"
     DB.Execute "DROP TABLE TblContractLookup"
     DB.Execute "DROP TABLE TblPerson"
+    DB.Execute "DROP TABLE TblStnLookUp"
     
     'Table CrewMemberDetail
     DB.Execute "SELECT * INTO CrewMemberDetail FROM TblCrewMemberDetail"
@@ -320,7 +354,27 @@ Public Sub UpdateDBScriptUndo()
     DB.Execute "SELECT * INTO CrewMember FROM TblCrewMember"
     DB.Execute "DROP TABLE TblCrewMember"
     
-    MsgBox "Database reset successfully", vbOKOnly + vbInformation
+     'Table Station
+    DB.Execute "SELECT * INTO Station FROM TblStation"
+    DB.Execute "DROP TABLE TblStation"
+    
+     'Table StationDetail
+    DB.Execute "SELECT * INTO StationDetail FROM TblStationDetail"
+    DB.Execute "DROP TABLE TblStationDetail"
+    
+     'Table Template
+    DB.Execute "SELECT * INTO Template FROM TblTemplate"
+    DB.Execute "DROP TABLE TblTemplate"
+    
+     'Table TemplateDetail
+    DB.Execute "SELECT * INTO TemplateDetail FROM TblTemplateDetail"
+    DB.Execute "DROP TABLE TblTemplateDetail"
+    
+     'Table TimeTbl
+    DB.Execute "SELECT * INTO TimeTbl FROM TblTimeTbl"
+    DB.Execute "DROP TABLE TblTimeTbl"
+   
+   MsgBox "Database reset successfully", vbOKOnly + vbInformation
     
     Set RstTable = Nothing
     Set TableDef = Nothing
