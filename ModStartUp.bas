@@ -25,8 +25,6 @@ Public Function Initialise() As Boolean
 
     Terminate
 
-    SYS_PATH = ThisWorkbook.Path & INI_FILE_PATH
-
     Application.StatusBar = "Reading INI File....."
     
     If Not ReadINIFile Then Err.Raise HANDLED_ERROR
@@ -145,7 +143,7 @@ End Function
 ' ReadINIFile
 ' Gets start up variables from ini file
 ' ---------------------------------------------------------------
-Private Function ReadINIFile() As Boolean
+Public Function ReadINIFile() As Boolean
     Dim DebugMode As String
     Dim EnablePrint As String
     Dim DBPath As String
@@ -159,7 +157,9 @@ Private Function ReadINIFile() As Boolean
     On Error GoTo ErrorHandler
        
     INIFile = FreeFile()
-       
+    
+    SYS_PATH = ThisWorkbook.Path & INI_FILE_PATH
+
     Debug.Print SYS_PATH & INI_FILE_NAME
     
     If Dir(SYS_PATH & INI_FILE_NAME) = "" Then Err.Raise NO_INI_FILE

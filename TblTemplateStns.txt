@@ -1,4 +1,4 @@
 CrewNo,  dbText
-Station,  dbDouble
-StationNo,  dbLong
+Station,  dbLong
+StationNo,  dbText
 HrsPW,  dbDouble

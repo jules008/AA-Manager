@@ -210,7 +210,10 @@ Public Sub UpdateDBScript()
     
     Dim Fld As DAO.Field
     
-    If DB Is Nothing Then DBConnect
+    If DB Is Nothing Then
+        ReadINIFile
+        DBConnect
+    End If
     
     DB.Execute "CREATE TABLE TblDBVersion"
     DB.Execute "ALTER TABLE TblDBVersion ADD Version Text"
@@ -222,9 +225,7 @@ Public Sub UpdateDBScript()
         .Fields(0) = "V0.0.0"
         .Update
     End With
-    
-    Set RstTable = SQLQuery("TblDBVersion")
-    
+       
     'check preceding DB Version
     If RstTable!VERSION <> "V0.0.0" Then
         MsgBox "Database needs to be upgraded to V0.0.0 to continue", vbOKOnly + vbCritical
@@ -319,6 +320,10 @@ Public Sub UpdateDBScript()
     DB.Execute "ALTER TABLE TblTemplateStns DROP TemplateDate"
     DB.Execute "ALTER TABLE TblTemplateStns ADD HrsPW Double"
     
+    Dim tbl As TableDef
+    Set tbl = DB.TableDefs("TblTemplateStns")
+    tbl.Fields("NoStation").Name = "Station"
+    
     'Table TemplateDetail
     DB.Execute "SELECT * INTO TblTemplateDetail FROM TemplateDetail"
     DB.Execute "SELECT * INTO TblTemplateDetailBAK FROM TemplateDetail"
@@ -344,7 +349,7 @@ Public Sub UpdateDBScript()
 
 
     DB.Execute "INSERT INTO TblPerson (Crewno,Forename,Surname,UserName,RankGrade,MailAlert, Role,MessageRead,Stations )" _
-                    & " VALUES ('5398', 'Julian', 'Turner', 'Julian Turner', 'Admin', TRUE, 2, TRUE, 1)"
+                    & " VALUES ('5398', 'Julian', 'Turner', 'Julian Turner', 'Admin', TRUE, 2, TRUE, '1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1')"
     
     'update DB Version
     Set RstTable = SQLQuery("TblDBVersion")
@@ -361,6 +366,7 @@ Public Sub UpdateDBScript()
     
     Set RstTable = Nothing
     Set TableDef = Nothing
+    Set tbl = Nothing
     Set Fld = Nothing
     
 End Sub
@@ -377,7 +383,10 @@ Public Sub UpdateDBScriptUndo()
         
     Dim Fld As DAO.Field
         
-    If DB Is Nothing Then DBConnect
+    If DB Is Nothing Then
+        ReadINIFile
+        DBConnect
+    End If
     
     Set RstTable = SQLQuery("TblDBVersion")
 
@@ -386,9 +395,6 @@ Public Sub UpdateDBScriptUndo()
         Exit Sub
     End If
        
-     
-    Set RstTable = SQLQuery("TblDBVersion")
-
     With RstTable
         .Edit
         .Fields(0) = "V0.0.0"
