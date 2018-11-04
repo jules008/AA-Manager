@@ -152,6 +152,7 @@ Private Function ReadINIFile() As Boolean
     Dim SendEmails As String
     Dim DevMode As String
     Dim INIFile As Integer
+    Dim DBFileName As String
     
     Const StrPROCEDURE As String = "ReadINIFile()"
 
@@ -169,6 +170,7 @@ Private Function ReadINIFile() As Boolean
     Line Input #INIFile, SendEmails
     Line Input #INIFile, EnablePrint
     Line Input #INIFile, DBPath
+    Line Input #INIFile, DBFileName
     Line Input #INIFile, DevMode
     
     Close #INIFile
@@ -177,6 +179,7 @@ Private Function ReadINIFile() As Boolean
     SEND_EMAILS = CBool(SendEmails)
     ENABLE_PRINT = CBool(EnablePrint)
     DB_PATH = DBPath
+    DB_FILE_NAME = DBFileName
     DEV_MODE = CBool(DevMode)
     
     If STOP_FLAG = True Then Stop

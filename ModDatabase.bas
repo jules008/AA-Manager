@@ -76,6 +76,8 @@ Public Function DBConnect() As Boolean
     Const StrPROCEDURE As String = "DBConnect()"
 
     On Error GoTo ErrorHandler
+        
+    Debug.Print "Connect to DB: " & DB_PATH & DB_FILE_NAME
     
     Set DB = OpenDatabase(DB_PATH & DB_FILE_NAME)
   
@@ -208,7 +210,7 @@ Public Sub UpdateDBScript()
     
     Dim Fld As DAO.Field
     
-    DBConnect
+    If DB Is Nothing Then DBConnect
     
     DB.Execute "CREATE TABLE TblDBVersion"
     DB.Execute "ALTER TABLE TblDBVersion ADD Version Text"
@@ -233,7 +235,9 @@ Public Sub UpdateDBScript()
     DB.Execute "CREATE TABLE TblContractLookup"
     DB.Execute "ALTER TABLE TblContractLookup ADD ContractNo Long"
     DB.Execute "ALTER TABLE TblContractLookup ADD ContractType Text"
-    
+    DB.Execute "INSERT INTO TblContractLookup VALUES (1, 'Under 120 Hrs')"
+    DB.Execute "INSERT INTO TblContractLookup VALUES (2, 'Over 120 Hrs')"
+
     'Table TblStnLookUp
     DB.Execute "CREATE TABLE TblStnLookUp"
     DB.Execute "ALTER TABLE TblStnLookUp ADD StationNo Long"
@@ -242,14 +246,46 @@ Public Sub UpdateDBScript()
     DB.Execute "ALTER TABLE TblStnLookUp ADD Address Text"
     DB.Execute "ALTER TABLE TblStnLookUp ADD StationType Text"
     DB.Execute "ALTER TABLE TblStnLookUp ADD Division Text"
-     
-    'Table TblTemplateStns
-    DB.Execute "CREATE TABLE TblTemplateStns"
-    DB.Execute "ALTER TABLE TblTemplateStns ADD CrewNo Text"
-    DB.Execute "ALTER TABLE TblTemplateStns ADD Station Double"
-    DB.Execute "ALTER TABLE TblTemplateStns ADD StationNo Long"
-    DB.Execute "ALTER TABLE TblTemplateStns ADD HrsPW Double"
-       
+    
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (1 , 'EC01', 'Alford', 'Willoughby Rd, Alford LN13 9AT, UK', 2, 'East')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (2 , 'EC02', 'Bardney', 'Bardney, Lincoln LN3 5TF, UK', 2, 'West')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (3 , 'EC03', 'Billingborough', 'High St, Billingborough, Sleaford NG34 0QA, UK', 2, 'South')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (4 , 'EC04', 'Billinghay', 'Mill Ln, Billinghay, Lincoln LN4 4ES, UK', 2, 'West')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (5 , 'EC05', 'Binbrook', 'St Marys Ln, Binbrook, Market Rasen LN8 6DL, UK', 2, 'East')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (6 , 'EC06', 'Boston', 'Robin Hoods Walk, Boston PE21 9EP, UK', 1, 'East')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (7 , 'EC07', 'Bourne', 'South St, Bourne PE10 9LY, UK', 2, 'South')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (8 , 'EC08', 'Brant Broughton', 'High St, Brant Broughton, Lincoln LN5 0SL, UK', 2, 'South')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (9 , 'EC09', 'Caistor', 'Caistor, Market Rasen LN7, UK', 2, 'West')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (10 , 'EC10', 'Corby Glen', 'Bourne Rd, United Kingdom', 2, 'South')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (11 , 'EC11', 'Crowland', 'Thorney Rd, Crowland, Peterborough PE6 0AL, UK', 2, 'South')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (12 , 'EC12', 'Donington', 'High St, Donington, Spalding PE11 4TA, UK', 2, 'East')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (13 , 'EC13', 'Gainsborough', 'Nelson St, Gainsborough DN21 2SE, UK', 1, 'West')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (14 , 'EC14', 'Grantham', 'Fire Station/Harlaxton Rd, Grantham NG31 7SG, UK', 1, 'South')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (15 , 'EC15', 'Holbeach', 'Holbeach, Spalding PE12, UK', 2, 'South')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (16 , 'EC16', 'Horncastle', 'Foundry St, Horncastle LN9 6AB, UK', 2, 'East')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (17 , 'EC17', 'Kirton', 'Station Rd, Kirton, Boston PE20 1LD, UK', 2, 'East')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (18 , 'EC18', 'Leverton', 'Old Main Rd, Old Leake, Boston PE22 9HT, UK', 2, 'East')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (19 , 'EC19', 'Lincoln North', 'Nettleham Road, Lincoln, LN2 4DH.', 1, 'West')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (20 , 'EC20', 'Lincoln South', 'South Pk Av, Lincoln LN5 8EL, UK', 1, 'West')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (21 , 'EC21', 'Long Sutton', 'Long Sutton, Spalding PE12, UK', 2, 'South')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (22 , 'EC22', 'Louth', 'Eastfield Rd, Louth LN11 7AS, UK', 1, 'East')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (23 , 'EC23', 'Mablethorpe', 'The Blvd, Mablethorpe LN12 2AD, UK', 2, 'East')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (24 , 'EC24', 'Market Deeping', 'High Street Market, High St, Market Deeping, Peterborough PE6 8ED, UK', 2, 'South')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (25 , 'EC25', 'Market Rasen', 'Linwood Rd, Market Rasen LN8 3AN, UK', 2, 'West')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (26 , 'EC26', 'Metheringham', 'Fen Road, Metheringham, LN4 3AA.', 2, 'West')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (27 , 'EC27', 'North Hykeham', 'Mill Ln, North Hykeham, Lincoln LN6 9PE, UK', 2, 'West')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (28 , 'EC28', 'North Somercotes', 'Churchill Rd, North Somercotes, Louth LN11, UK', 2, 'East')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (29 , 'EC29', 'Saxilby', 'Saxilby, Lincoln LN1, UK', 2, 'West')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (30 , 'EC30', 'Skegness', 'Churchill Ave, Skegness PE25 2RN, UK', 1, 'East')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (31 , 'EC31', 'Sleaford', 'Church Ln, Sleaford NG34, UK', 2, 'South')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (32 , 'EC32', 'Spalding', 'High St, Donington, Spalding PE11 4TA, UK', 2, 'South')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (33 , 'EC33', 'Spilsby', 'Boston Rd, Spilsby PE23 5HH, UK', 2, 'East')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (34 , 'EC34', 'Stamford', '68 New Cross Rd, Stamford PE9 1, UK', 2, 'South')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (35 , 'EC35', 'Waddington', 'Mere Road, Waddington, LN5 9NX.', 2, 'West')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (36 , 'EC36', 'Wainfleet', 'Magdalen Rd, Wainfleet All Saints, Skegness PE24 4DD, UK', 2, 'East')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (37 , 'EC37', 'Woodhall Spa', 'King Edward Rd, Woodhall Spa LN10 6RL, UK', 2, 'West')"
+    DB.Execute "INSERT INTO TblStnLookUp VALUES (38 , 'EC38', 'Wragby', 'Millbrook Ln, Wragby, Market Rasen LN8 5AB, UK', 2, 'West')"
+
     'Table CrewMemberDetail
     DB.Execute "SELECT * INTO TblCrewMemberDetail FROM CrewMemberDetail"
     DB.Execute "DROP TABLE CrewMemberDetail"
@@ -273,6 +309,15 @@ Public Sub UpdateDBScript()
     DB.Execute "ALTER TABLE TblTemplate DROP ID, NoStation, StationNo, StationName"
     DB.Execute "ALTER TABLE TblTemplate ADD ContractType Double, HrsPW Double, NoWeeks Double, RevDateDue Date"
     DB.Execute "ALTER TABLE TblTemplate ALTER COLUMN Role Long"
+
+    'Table TblTemplateStns
+    DB.Execute "SELECT * INTO TblTemplateStns FROM TblTemplateBAK"
+    DB.Execute "ALTER TABLE TblTemplateStns DROP ID"
+    DB.Execute "ALTER TABLE TblTemplateStns DROP Role"
+    DB.Execute "ALTER TABLE TblTemplateStns DROP CrewName"
+    DB.Execute "ALTER TABLE TblTemplateStns DROP StationName"
+    DB.Execute "ALTER TABLE TblTemplateStns DROP TemplateDate"
+    DB.Execute "ALTER TABLE TblTemplateStns ADD HrsPW Double"
     
     'Table TemplateDetail
     DB.Execute "SELECT * INTO TblTemplateDetail FROM TemplateDetail"
@@ -332,7 +377,7 @@ Public Sub UpdateDBScriptUndo()
         
     Dim Fld As DAO.Field
         
-    DBConnect
+    If DB Is Nothing Then DBConnect
     
     Set RstTable = SQLQuery("TblDBVersion")
 
