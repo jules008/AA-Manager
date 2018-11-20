@@ -502,7 +502,7 @@ Public Function FormatWkRnge(NoWeeks As Integer) As Boolean
     Set RngDay1 = ShtFrontPage.Range(RNG_DAY_1)
     Set RngWkNo1 = ShtFrontPage.Range(RNG_WKNO_1)
     
-    If i = 0 Then Err.Raise HANDLED_ERROR, , "No of weeks set to zero"
+    If NoWeeks = 0 Then Err.Raise HANDLED_ERROR, , "No of weeks set to zero"
     
     For i = 1 To NoWeeks
     

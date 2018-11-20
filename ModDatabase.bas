@@ -209,7 +209,7 @@ Public Sub UpdateDBScript()
     Dim Binary As String
     
     Dim Fld As DAO.Field
-    
+
     If DB Is Nothing Then
         ReadINIFile
         DBConnect
@@ -224,6 +224,7 @@ Public Sub UpdateDBScript()
         .AddNew
         .Fields(0) = "V0.0.0"
         .Update
+        .MoveFirst
     End With
        
     'check preceding DB Version
@@ -311,6 +312,46 @@ Public Sub UpdateDBScript()
     DB.Execute "ALTER TABLE TblTemplate ADD ContractType Double, HrsPW Double, NoWeeks Double, RevDateDue Date"
     DB.Execute "ALTER TABLE TblTemplate ALTER COLUMN Role Long"
 
+    Dim Role As String
+    Dim RoleNo As Integer
+    Dim RstWeekCnt As Recordset
+    Dim NoWeeks As Integer
+    
+    Set RstTable = SQLQuery("TblTemplateBAK")
+    
+    With RstTable
+        Do While Not .EOF
+            Select Case !Role
+                Case Is = "WM"
+                   DB.Execute "UPDATE TblTemplate SET Role = 2 WHERE CrewNo = '" & !CrewNo & "'"
+                Case Is = "CM"
+                   DB.Execute "UPDATE TblTemplate SET Role = 1 WHERE CrewNo = '" & !CrewNo & "'"
+                Case Is = "FF"
+                   DB.Execute "UPDATE TblTemplate SET Role = 0 WHERE CrewNo = '" & !CrewNo & "'"
+                Case Else
+                   DB.Execute "UPDATE TblTemplate SET Role = 0 WHERE CrewNo = '" & !CrewNo & "'"
+            End Select
+            
+            Set RstWeekCnt = SQLQuery("SELECT MAX (TemplateDetail.Day) FROM TemplateDetail WHERE CrewNo = '" & !CrewNo & "'")
+            
+            NoWeeks = RstWeekCnt.Fields(0) / 7
+            
+            DB.Execute "UPDATE TblTemplate SET NoWeeks = " & NoWeeks & " WHERE CrewNo = '" & !CrewNo & "'"
+            
+            .MoveNext
+        Loop
+        
+        DB.Execute "SELECT DISTINCT * INTO TblTemplate1 FROM TblTemplate"
+        DB.Execute "DROP TABLE TblTemplate"
+        DB.Execute "SELECT * INTO TblTemplate FROM TblTemplate1"
+        DB.Execute "DROP TABLE TblTemplate1"
+        
+        DB.Execute "UPDATE TblTemplate SET RevDateDue = TemplateDate"
+        
+    End With
+    
+    Set RstWeekCnt = Nothing
+    
     'Table TblTemplateStns
     DB.Execute "SELECT * INTO TblTemplateStns FROM TblTemplateBAK"
     DB.Execute "ALTER TABLE TblTemplateStns DROP ID"
@@ -320,16 +361,23 @@ Public Sub UpdateDBScript()
     DB.Execute "ALTER TABLE TblTemplateStns DROP TemplateDate"
     DB.Execute "ALTER TABLE TblTemplateStns ADD HrsPW Double"
     
-    Dim tbl As TableDef
-    Set tbl = DB.TableDefs("TblTemplateStns")
-    tbl.Fields("NoStation").Name = "Station"
+    Dim Tbl As DAO.TableDef
+    Set Tbl = DB.TableDefs("TblTemplateStns")
     
+    Set Fld = Tbl.Fields("NoStation")
+    Fld.Name = "Station"
+    
+Skip:
+
     'Table TemplateDetail
     DB.Execute "SELECT * INTO TblTemplateDetail FROM TemplateDetail"
     DB.Execute "SELECT * INTO TblTemplateDetailBAK FROM TemplateDetail"
     DB.Execute "DROP TABLE TemplateDetail"
-    DB.Execute "ALTER TABLE TblTemplateDetail DROP ID1, StationNo, ClosedDate"
     DB.Execute "ALTER TABLE TblTemplateDetail ALTER COLUMN OnCall Double"
+
+    DB.Execute "UPDATE TblTemplateDetail SET OnCall = StationNo"
+
+    DB.Execute "ALTER TABLE TblTemplateDetail DROP ID1, StationNo, ClosedDate"
     
     'Table TimeTbl
     DB.Execute "SELECT * INTO TblTimeTbl FROM TimeTbl"
@@ -366,7 +414,7 @@ Public Sub UpdateDBScript()
     
     Set RstTable = Nothing
     Set TableDef = Nothing
-    Set tbl = Nothing
+    Set Tbl = Nothing
     Set Fld = Nothing
     
 End Sub
